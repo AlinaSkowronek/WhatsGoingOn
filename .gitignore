@@ -1,0 +1,43 @@
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Debug
+.vscode/
+*.swp
+*.swo
+
+# Database and OS files
+*.sqlite
+*.pgdata
+*.pgpass
+*.DS_Store
+
+# Cache and coverage
+.cache/
+coverage/
+dist/
+
+# IDE-specific files
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.lock
+
+# Build artifacts
+/build/
