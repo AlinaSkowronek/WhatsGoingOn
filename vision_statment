@@ -1,13 +1,1 @@
-Our application will modernize on campus events for organizers and students alike. Gone are the days of free 
-stuff being avalible on campus without students knowing. What's Going On is a simple user interface that shows 
-all events taking place on campus that day, with additional information as to what the event is and if there are 
-free items avalible for students. For organizers, events can be registered for free on What's Going On to help 
-drive engagment at their events. 
-
-Our implementation of this website will be as follows: we will have a PostGres SQL database that will store all 
-events taking place on that day, with data memebers to account for all relevant information (location, time, 
-giveaways, ect.). Then, through the database, we will populate a map of the CU Boulder campus with the location
-of the events, which will constitute the majority of the UI. Users can also search for specific events or filter by
-event type based on their specific need.
-
-Our product is a win-win for everyone: event organizers get more exposure, and students get more stuff.
+To connect organizers and students for the benefit of our campus
