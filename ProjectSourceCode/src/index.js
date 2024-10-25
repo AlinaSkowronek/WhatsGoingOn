@@ -1,9 +1,9 @@
-const express = require('express'); 
+const express = require('express');
 const app = express();
 const handlebars = require('express-handlebars');
 const Handlebars = require('handlebars');
 const path = require('path');
-const pgp = require('pg-promise')(); 
+const pgp = require('pg-promise')();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
@@ -62,5 +62,65 @@ const auth = (req, res, next) => {
 */
 
 app.get('/', (req, res) => {
-    
+    res.redirect('/login');
 });
+
+app.get('/login', (req, res) => {
+    res.render('pages/login');
+});
+
+app.get('/register', (req, res) => {
+    res.render('pages/register');
+});
+
+app.get('/logout', auth, (req, res) => {
+    req.session.destroy();
+    res.render('pages/logout');
+});
+
+app.get('/home', auth, async (req, res) => {
+    res.render('pages/home', { user: req.session.user });
+});
+
+app.post('/register', async (req, res) => {
+    const hash = await bcrypt.hash(req.body.password, 10);
+
+    const exists = await db.oneOrNone('SELECT * FROM users WHERE username = $1', req.body.username);
+    if (exists) {
+        return res.render('pages/register', { message: 'User already exists.' });
+    }
+
+    await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash])
+        .then(() => {
+            res.redirect('/login');
+            res.status(201).json({
+                status: 'success',
+                data: data,
+                message: 'Registered successfully!',
+            });
+        })
+        .catch((err) => {
+            res.render('pages/login');
+            return console.log(err);
+        });
+});
+
+app.post('/login', async (req, res) => {
+    try {
+        const user = await db.one('SELECT password FROM users WHERE username = $1', req.body.username);
+        const match = await bcrypt.compare(req.body.password, user.password);
+        if (match) {
+            req.session.user = req.body.username;
+            res.redirect('/home');
+            req.session.save();
+        } else {
+            res.render('pages/login', { message: 'Incorrect password.' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.render('pages/register', { message: 'User does not exist.' });
+    }
+});
+
+app.listen(3000);
+console.log('Server is listening on port 3000');
