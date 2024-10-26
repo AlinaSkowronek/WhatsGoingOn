@@ -52,14 +52,14 @@ app.use(
         extended: true,
     })
 );
-/*
+
 const auth = (req, res, next) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
     next();
 };
-*/
+
 
 app.get('/', (req, res) => {
     res.redirect('/login');
@@ -79,15 +79,16 @@ app.get('/logout', auth, (req, res) => {
 });
 
 app.get('/home', auth, async (req, res) => {
-    res.render('pages/home', { user: req.session.user });
+    res.render('pages/home');
 });
 
 app.post('/register', async (req, res) => {
     const hash = await bcrypt.hash(req.body.password, 10);
 
-    const exists = await db.oneOrNone('SELECT * FROM users WHERE username = $1', req.body.username);
+    const exists = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [req.body.username]);
     if (exists) {
-        return res.render('pages/register', { message: 'User already exists.' });
+        res.render('pages/register', { message: 'Username already taken.' });
+        return;
     }
 
     await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash])
