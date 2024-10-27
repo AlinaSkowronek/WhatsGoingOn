@@ -34,6 +34,8 @@ db.connect()
         console.log('ERROR:', error.message || error);
     });
 
+app.use('/resources', express.static(path.join(__dirname, 'resources')));
+
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
@@ -71,6 +73,10 @@ app.get('/login', (req, res) => {
 
 app.get('/register', (req, res) => {
     res.render('pages/register');
+});
+
+app.get('/map', auth, (req, res) => {
+    res.render('pages/map', { apiKey: process.env.API_KEY });
 });
 
 app.get('/logout', auth, (req, res) => {
