@@ -1,0 +1,9 @@
+This week, we decided that Andrew will be in charge of back end server maintence and API calls within  the index.js file
+Justin will be responsible for creating our data base and ensuring all neccesarry user attributes are held 
+Jake will be in charge of handlebars and functional implementation of dynamic content within our website
+Alina and Anika will be in charge of beautifying the website and ensuring the UI is easy to use
+
+By next week-> we will know for sure what data members will be needed and will be implemented
+Will know what the website will look like (wireframes)
+Will have UI updated so that users can place a marker on the map
+Will have the begining of a modal that appears when users hover over an event
