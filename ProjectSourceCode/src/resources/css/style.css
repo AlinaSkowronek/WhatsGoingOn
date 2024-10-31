@@ -1,4 +1,11 @@
 #map {
- height: 800px;
- width: 800px;
+    width: 100%; /* Makes it scale to the container's width */
+    height: 750px; /* Adjust height as needed */
+}
+
+/* Optional: make it responsive on smaller screens */
+@media (max-width: 768px) {
+    #map {
+        height: 300px; /* Adjust for smaller screens */
+    }
 }
