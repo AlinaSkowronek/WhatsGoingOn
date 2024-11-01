@@ -1,0 +1,23 @@
+<p>This is the creation page for events</p>
+
+{{> message}}
+
+<form action="/createEvent" method="POST">
+    <div>
+        <label for="eventName">Event name:</label>
+        <input type="text" id="eventName" name="eventName" required>
+    </div>
+    <div>
+        <label for="eventTime">Event time:</label>
+        <input type="time" id="eventName" name="eventTime" required>
+    </div>
+    {{!-- <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div> --}}
+    <div>
+        <button type="submit">Create</button>
+    </div>
+</form>
+
+{{!-- <p>Don't have an account? <a href="/register">Register here</a></p> --}}

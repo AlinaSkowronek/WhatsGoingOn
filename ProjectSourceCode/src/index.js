@@ -70,6 +70,9 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
     res.render('pages/login');
 });
+app.get('/createEvent', (req, res) => {
+    res.render('pages/createEvent');
+});
 
 app.get('/register', (req, res) => {
     res.render('pages/register');
@@ -85,9 +88,34 @@ app.get('/logout', auth, (req, res) => {
     res.render('pages/logout');
 });
 
-app.get('/home', auth, async (req, res) => {
-    res.render('pages/home');
-});
+app.get('/home', (req, res) => {
+    db.any('SELECT * from EVENTS')
+      .then(results => {
+        let events = [];
+  
+        // Check if events are available in the response
+        
+          events = JSON.stringify(results);
+            // return {
+            //   name: event.eventName,
+            //   time: event.eventTime,
+            //   longitude: event.eventLongitude,
+            //   lattitude: event.eventLattitude
+            // };
+          });
+        
+  
+        // Pass the events (even if it's an empty array) to the Handlebars template
+        res.render('pages/home', { events });
+      })
+      .catch(error => {
+        console.error('Error:', error.response ? error.response.data : error.message);
+        
+        // In case of an error, still render the page but with an empty events array
+        res.render('pages/home', { events: [] });
+      });
+  
+  
 
 app.post('/register', async (req, res) => {
     const hash = await bcrypt.hash(req.body.password, 10);
@@ -127,6 +155,33 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         console.log(err);
         res.render('pages/register', { message: 'User does not exist.' });
+    }
+});
+
+app.post('/createEvent', async (req, res) => {
+    // try {
+    //     const user = await db.one('SELECT password FROM users WHERE username = $1', req.body.username);
+    //     const match = await bcrypt.compare(req.body.password, user.password);
+    //     if (match) {
+    //         req.session.user = req.body.username;
+    //         res.redirect('/home');
+    //         req.session.save();
+    //     } else {
+    //         res.render('pages/login', { message: 'Incorrect password.' });
+    //     }
+    // } catch (err) {
+    //     console.log(err);
+    //     res.render('pages/register', { message: 'User does not exist.' });
+    // }
+    try{
+        await db.none('INSERT INTO events (eventName, eventTime) VALUES ($1, $2)', [req.body.eventName, req.body.eventTime ]);
+        res.render('pages/createEvent',{ message: 'Succsesfully added event'});
+        console.log('live');
+        
+
+    }
+    catch (err){
+        console.log('die');
     }
 });
 
