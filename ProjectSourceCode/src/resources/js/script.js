@@ -15,10 +15,39 @@ function initMap() {
 
         marker.addListener('click', () => {
             const infoWindow = new google.maps.InfoWindow({
-                content: `<h3>${markerData.title}</h3>`
+                content: `<h3>${markerData.title}</h3><p>hey</p>`
             });
             infoWindow.open(map, marker);
         });
+    });
+
+    map.addListener('click', (event) => {
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            position: event.latLng,
+            map: map,
+            title: 'New Marker'
+        });
+        marker.addListener('click', () => {
+            const infoWindow = new google.maps.InfoWindow({
+                content: `<h3>${marker.title}</h3><p>hey</p>`
+            });
+            infoWindow.open(map, marker);
+        });
+        fetch('/add-marker', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: 'New Marker',
+                latitude: event.latLng.lat(),
+                longitude: event.latLng.lng()
+            })
+        })
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error:', error);
+        })
     });
 }
 
