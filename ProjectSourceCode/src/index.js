@@ -75,8 +75,9 @@ app.get('/register', (req, res) => {
     res.render('pages/register');
 });
 
-app.get('/map', auth, (req, res) => {
-    res.render('pages/map', { apiKey: process.env.API_KEY });
+app.get('/map', auth, async (req, res) => {
+    const markers = await db.any('SELECT * FROM markers');
+    res.render('pages/map', { apiKey: process.env.API_KEY, markers: JSON.stringify(markers) });
 });
 
 app.get('/logout', auth, (req, res) => {
