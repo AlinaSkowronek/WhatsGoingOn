@@ -132,7 +132,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/add-marker', auth, async (req, res) => {
     const { title, latitude, longitude } = req.body;
-    await db.none('INSERT INTO marfkers(title, latitude, longitude) VALUES($1, $2, $3)', [title, latitude, longitude])
+    await db.none('INSERT INTO markers(title, latitude, longitude) VALUES($1, $2, $3)', [title, latitude, longitude])
         .then(() => {
             res.status(201).json({
                 status: 'success',
