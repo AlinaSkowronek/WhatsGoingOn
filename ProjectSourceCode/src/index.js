@@ -88,32 +88,22 @@ app.get('/logout', auth, (req, res) => {
     res.render('pages/logout');
 });
 
-app.get('/home', (req, res) => {
-    db.any('SELECT * from EVENTS')
+app.get('/home', async (req, res) => {
+    let events = [];
+    db.any('SELECT * FROM EVENTS')
       .then(results => {
-        let events = [];
-  
-        // Check if events are available in the response
-        
-          events = JSON.stringify(results);
-            // return {
-            //   name: event.eventName,
-            //   time: event.eventTime,
-            //   longitude: event.eventLongitude,
-            //   lattitude: event.eventLattitude
-            // };
-          });
-        
-  
-        // Pass the events (even if it's an empty array) to the Handlebars template
-        res.render('pages/home', { events });
+        // Pass results directly to the template
+        console.log(results);
+        res.render('pages/home', { events: results });
+
       })
       .catch(error => {
         console.error('Error:', error.response ? error.response.data : error.message);
-        
-        // In case of an error, still render the page but with an empty events array
-        res.render('pages/home', { events: [] });
+        res.render('pages/home',  { eventName: 'Sample Event', eventTime: '2024-11-01', eventLongitude: '50.123', eventLattitude: '-100.456' } );
       });
+  });
+  
+
   
   
 
@@ -174,7 +164,8 @@ app.post('/createEvent', async (req, res) => {
     //     res.render('pages/register', { message: 'User does not exist.' });
     // }
     try{
-        await db.none('INSERT INTO events (eventName, eventTime) VALUES ($1, $2)', [req.body.eventName, req.body.eventTime ]);
+        await db.none('INSERT INTO events (eventName, eventTime, eventLongitude, eventLattitude) VALUES ($1, $2, $3, $4)', [req.body.eventName, req.body.eventTime, req.body.eventLongitude, req.body.eventLattitude ]);
+        await db.none('INSERT into MARKERS (title, latitude, longitude) VALUES ($1, $2, $3)', [req.body.eventName, req.body.eventLattitude, req.body.eventLongitude]);
         res.render('pages/createEvent',{ message: 'Succsesfully added event'});
         console.log('live');
         

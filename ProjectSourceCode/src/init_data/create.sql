@@ -11,3 +11,11 @@ CREATE TABLE IF NOT EXISTS events (
     eventLongitude FLOAT
 ); 
 
+CREATE TABLE
+    IF NOT EXISTS markers (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        latitude FLOAT NOT NULL,
+        longitude FLOAT NOT NULL
+    );
+

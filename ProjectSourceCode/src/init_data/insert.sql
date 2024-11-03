@@ -11,3 +11,14 @@ VALUES
         40.006754136846695,
         -105.26330010849537
     );
+INSERT INTO
+    events (eventName, eventTime)
+VALUES
+    (
+        'event 1',
+        11
+    ),
+    (
+        'event 2',
+        10
+    );
