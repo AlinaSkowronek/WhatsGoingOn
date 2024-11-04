@@ -1,3 +1,48 @@
+function initInfoWindow(map, marker, markerData) {
+    const infoWindow = new google.maps.InfoWindow({
+        content: `
+            <h3>${markerData.title}</h3>
+            <button id="confirmButton">Confirm</button>
+        `
+    });
+    infoWindow.open(map, marker);
+
+    document.getElementById('confirmButton').addEventListener('click', function() {
+        openModal(markerData);
+    });
+}
+
+function openModal(markerData) {
+    const modal = document.getElementById('markerModal');
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    titleInput.value = markerData.title || '';
+    descriptionInput.value = markerData.description || '';
+    modal.style.display = 'block';
+
+    document.getElementById('markerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const title = titleInput.value;
+        const description = descriptionInput.value;
+        fetch('/add-marker', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, description })
+        })
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        modal.style.display = 'none';
+    });
+
+    document.getElementById('closeModal').addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+}
+
 function initMap() {
     const location = { lat: 40.0067984, lng: -105.265396 };
     const map = new google.maps.Map(document.getElementById('map'), {
@@ -14,10 +59,7 @@ function initMap() {
         });
 
         marker.addListener('click', () => {
-            const infoWindow = new google.maps.InfoWindow({
-                content: `<h3>${markerData.title}</h3><p>hey</p>`
-            });
-            infoWindow.open(map, marker);
+            initInfoWindow(map, marker, markerData);
         });
     });
 
@@ -28,10 +70,7 @@ function initMap() {
             title: 'New Marker'
         });
         marker.addListener('click', () => {
-            const infoWindow = new google.maps.InfoWindow({
-                content: `<h3>${marker.title}</h3><p>hey</p>`
-            });
-            infoWindow.open(map, marker);
+            initInfoWindow(map, marker, { title: 'New Marker' });
         });
         fetch('/add-marker', {
             method: 'POST',
@@ -44,10 +83,10 @@ function initMap() {
                 longitude: event.latLng.lng()
             })
         })
-        .then(response => response.json())
-        .catch(error => {
-            console.error('Error:', error);
-        })
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error:', error);
+            })
     });
 }
 

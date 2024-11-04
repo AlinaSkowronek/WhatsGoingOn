@@ -1,8 +1,26 @@
-
 <div class="container d-flex justify-content-center align-items-center">
     <div class="row w-100">
         <div class="col-6 mx-auto">
             <div id="map" apiKey="{{apiKey}}" markers="{{markers}}"></div>
+        </div>
+    </div>
+</div>
+
+<div id="markerModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <h4>Marker Information</h4>
+            <form id="markerForm">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" id="title" required>
+                <label for="event_attendees" class="form-label">Attendees</label>
+                <input type="text" class="form-control" id="event_attendees"
+                    placeholder="John Burgerson, Jane Doe, Jean Porc, Angelica Smith" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="closeModal" class="modal-close">Close</button>
         </div>
     </div>
 </div>
