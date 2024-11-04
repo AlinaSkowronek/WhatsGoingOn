@@ -1,8 +1,42 @@
-
 <div class="container d-flex justify-content-center align-items-center">
     <div class="row w-100">
         <div class="col-6 mx-auto">
             <div id="map" apiKey="{{apiKey}}" markers="{{markers}}"></div>
+        </div>
+    </div>
+</div>
+
+<div id="markerModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <h4>Marker Information</h4>
+            <form id="markerForm">
+                <label for="title">Event Name:</label>
+                <input type="text" class="form-control" id="title" required>
+                
+                <label for="date">Date:</label>
+                <input type="date" class="form-control" id="date" required>
+                
+                <label for="description">Description:</label>
+                <textarea class="form-control" id="description" required></textarea>
+                
+                <label for="startTime">Start Time:</label>
+                <input type="time" class="form-control" id="startTime" required>
+                
+                <label for="endTime">End Time:</label>
+                <input type="time" class="form-control" id="endTime" required>
+                
+                <label for="location">Location:</label>
+                <input type="text" class="form-control" id="location" required>
+                
+                <label for="organizers">Organizers:</label>
+                <input type="text" class="form-control" id="organizers" required>
+                
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="closeModal" class="modal-close">Close</button>
         </div>
     </div>
 </div>
