@@ -1,26 +1,8 @@
 function initInfoWindow(map, marker, markerData) {
-    const uniqueId = `confirmButton-${markerData.id}`;
-    const infoWindow = new google.maps.InfoWindow({
-        content: `
-            <h3>${markerData.title}</h3>
-            <button id="${uniqueId}">Confirm</button>
-        `
-    });
-    infoWindow.open(map, marker);
 
-    google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
-        const confirmButton = document.getElementById(uniqueId);
-        if (confirmButton) {
-            confirmButton.addEventListener('click', function () {
-                openModal(markerData);
-            });
-        } else {
-            console.error('Confirm button not found');
-        }
-    });
 }
 
-function openModal(markerData) {
+function openModal(marker) { //Open event creation modal
     const modal = document.getElementById('markerModal');
     const titleInput = document.getElementById('title');
     const dateInput = document.getElementById('date');
@@ -30,13 +12,13 @@ function openModal(markerData) {
     const locationInput = document.getElementById('location');
     const organizersInput = document.getElementById('organizers');
 
-    titleInput.value = markerData.title || '';
+    /*titleInput.value = markerData.title || '';
     dateInput.value = markerData.date || '';
     descriptionInput.value = markerData.description || '';
     startTimeInput.value = markerData.startTime || '';
     endTimeInput.value = markerData.endTime || '';
     locationInput.value = markerData.location || '';
-    organizersInput.value = markerData.organizers || '';
+    organizersInput.value = markerData.organizers || '';*/
 
     modal.style.display = 'block';
 
@@ -50,12 +32,12 @@ function openModal(markerData) {
         const location = locationInput.value;
         const organizers = organizersInput.value;
 
-        fetch('/add-marker', {
+        fetch('/createEvent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, date, description, startTime, endTime, location, organizers })
+            body: JSON.stringify({ title, date, description, startTime, endTime, location, organizers, lat: marker.latitude, lng: marker.longitude })
         })
             .then(response => response.json())
             .catch(error => {
@@ -71,12 +53,12 @@ function openModal(markerData) {
 
 function initMap() {
     const location = { lat: 40.0067984, lng: -105.265396 };
-    const map = new google.maps.Map(document.getElementById('map'), {
+    const map = new google.maps.Map(document.getElementById('map'), { //Create the map and center it on CU Boulder
         mapId: 'c23ba2a349b55683',
         zoom: 16,
         center: location
     });
-    const markers = JSON.parse(document.getElementById('map').getAttribute('markers'));
+    const markers = JSON.parse(document.getElementById('map').getAttribute('markers')); //Take all markers from database and put on map
     markers.forEach(markerData => {
         const marker = new google.maps.marker.AdvancedMarkerElement({
             position: { lat: markerData.latitude, lng: markerData.longitude },
@@ -89,16 +71,35 @@ function initMap() {
         });
     });
 
-    map.addListener('click', (event) => {
+    map.addListener('click', (event) => { //Instantiate a marker on click AND confirm
         const marker = new google.maps.marker.AdvancedMarkerElement({
             position: event.latLng,
             map: map,
             title: 'New Marker'
         });
-        marker.addListener('click', () => {
-            initInfoWindow(map, marker, { title: 'New Marker' });
+        const confirmButtonId = `confirmButton-${marker.id}`;
+        const removeButtonId = `removeButton-${marker.id}`;
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+                <h3>Create Event Here?</h3>
+                <button id="${confirmButtonId}">Confirm</button>
+                <button id="${removeButtonId}">Remove</button>
+            `
         });
-        fetch('/add-marker', {
+        infoWindow.open(map, marker);
+
+        google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
+            const confirmButton = document.getElementById(confirmButtonId);
+            confirmButton.addEventListener('click', function () {
+                openModal(marker);
+            });
+            const removeButton = document.getElementById(removeButtonId);
+            removeButton.addEventListener('click', function () {
+                marker.setMap(null); 
+                infoWindow.close(); 
+            });
+        });
+        /*fetch('/add-marker', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -112,11 +113,15 @@ function initMap() {
             .then(response => response.json())
             .catch(error => {
                 console.error('Error:', error);
-            })
+            })*/
     });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+        return;
+    }
     const apiKey = document.getElementById('map').getAttribute('apiKey');
     if (typeof google === 'object' && typeof google.maps === 'object') {
         initMap();
@@ -127,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
         script.defer = true;
         script.onerror = function () {
             console.error('Failed to load the Google Maps API script.');
-            document.getElementById('map').innerHTML = "<p>Some error has occured. Try configuring your browser settings (you can do this by going to by clicking on the i to the left of localhost:3000</p>";
+            mapElement.innerHTML = "<p>Some error has occured. Try configuring your browser settings (you can do this by going to by clicking on the i to the left of localhost:3000</p>";
         };
         document.head.appendChild(script);
     }

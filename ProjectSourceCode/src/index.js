@@ -130,13 +130,38 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.post('/add-marker', auth, async (req, res) => {
+/*app.post('/add-marker', auth, async (req, res) => {
     const { title, latitude, longitude } = req.body;
     await db.none('INSERT INTO markers(title, latitude, longitude) VALUES($1, $2, $3)', [title, latitude, longitude])
         .then(() => {
             res.status(201).json({
                 status: 'success',
                 message: 'Marker added successfully!',
+            });
+        })
+        .catch((err) => {
+            return console.log(err);
+        });
+});*/
+
+app.post('/createEvent', auth, async (req, res) => {
+    const {
+        title, date, description, startTime, endTime, location, organizers, latitude, longitude
+    } = req.body;
+    db.tx(async t => {
+        await t.none(
+            'INSERT INTO events(title, date, description, startTime, endTime, location, organizers) VALUES($1, $2, $3, $4, $5, $6, $7)',
+            [title, date, description, startTime, endTime, location, organizers]
+        );
+        await t.none(
+            'INSERT INTO markers(title, latitude, longtitude) VALUES($1, $2)',
+            [title, latitude, longitude]
+        );
+    })
+        .then(() => {
+            res.status(201).json({
+                status: 'success',
+                message: 'Event created successfully!',
             });
         })
         .catch((err) => {

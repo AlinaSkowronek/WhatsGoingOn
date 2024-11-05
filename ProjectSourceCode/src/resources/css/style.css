@@ -1,6 +1,10 @@
 #map {
-    width: 100%; /* Makes it scale to the container's width */
-    height: 750px; /* Adjust height as needed */
+    width: 50vw; /* Makes it scale to the container's width */
+    height: 90vh; /* Adjust height as needed */
+}
+
+#footerEntire {
+    background-color: antiquewhite;
 }
 
 /* Optional: make it responsive on smaller screens */

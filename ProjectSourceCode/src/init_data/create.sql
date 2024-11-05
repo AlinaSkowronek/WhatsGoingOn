@@ -10,22 +10,23 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS markers (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(45) NOT NULL,
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS event (
     event_id SERIAL PRIMARY KEY,
-    marker_id INT,
     event_name VARCHAR(45) NOT NULL,
     event_date TIMESTAMP,
-    event_description VARCHAR(255),
+    event_description VARCHAR(500),
     event_start TIMESTAMP,
     event_end TIMESTAMP,
-    event_location VARCHAR(45),
+    event_location VARCHAR(100),
+    event_organizers VARCHAR(255),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     event_status VARCHAR(20),
+    marker_id INT,
     FOREIGN KEY (marker_id) REFERENCES markers(id)
 );
 
