@@ -107,8 +107,8 @@ app.get('/register', (req, res) => {
 });
 
 app.get('/map', auth, async (req, res) => {
-    const markers = await db.any('SELECT * FROM markers');
-    res.render('pages/map', { apiKey: process.env.API_KEY, markers: JSON.stringify(markers) });
+    const markersAndEvents = await db.any('SELECT * FROM markers INNER JOIN events ON markers.id = events.marker_id');
+    res.render('pages/map', { apiKey: process.env.API_KEY, markers: JSON.stringify(markersAndEvents) });
 });
 
 app.get('/logout', auth, (req, res) => {
@@ -118,7 +118,7 @@ app.get('/logout', auth, (req, res) => {
 
 app.get('/home', auth, async (req, res) => {
     try {
-        const events = await db.any('SELECT * FROM event');
+        const events = await db.any('SELECT * FROM events');
         res.render('pages/home', { events });
     } catch (error) {
         console.error('Error:', error.message);
@@ -127,27 +127,20 @@ app.get('/home', auth, async (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    const hash = await bcrypt.hash(req.body.password, 10);
+    try {
+        const hash = await bcrypt.hash(req.body.password, 10);
 
-    const exists = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [req.body.username]);
-    if (exists) {
-        res.render('pages/register', { message: 'Username already taken.' });
-        return;
+        const exists = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [req.body.username]);
+        if (exists) {
+            return res.render('pages/register', { message: 'Username already taken.' });
+        }
+
+        await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash]);
+        res.redirect('/login');
+    } catch (err) {
+        console.error('Registration error:', err);
+        res.render('pages/register', { message: 'Registration failed. Please try again.' });
     }
-
-    await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash])
-        .then(() => {
-            res.redirect('/login');
-            res.status(201).json({
-                status: 'success',
-                data: data,
-                message: 'Registered successfully!',
-            });
-        })
-        .catch((err) => {
-            res.render('pages/login');
-            return console.log(err);
-        });
 });
 
 app.post('/login', async (req, res) => {
@@ -182,18 +175,25 @@ app.post('/login', async (req, res) => {
 });*/
 
 app.post('/createEvent', auth, async (req, res) => {
-    console.log(req.body);
     const {
-        title, date, description, startTime, endTime, location, organizers, latitude, longitude
+        title, date, description, startTime, endTime, location, organizers, lat, lng
     } = req.body;
+
+    // Combine date and time values into TIMESTAMP values
+    const eventStart = `${date} ${startTime}`;
+    const eventEnd = `${date} ${endTime}`;
+
     db.tx(async t => {
-        await t.none(
-            'INSERT INTO events(title, date, description, startTime, endTime, location, organizers) VALUES($1, $2, $3, $4, $5, $6, $7)',
-            [title, date, description, startTime, endTime, location, organizers]
+        // Insert into markers table first to get the marker_id
+        const markerId = await t.one(
+            'INSERT INTO markers(title, latitude, longitude) VALUES($1, $2, $3) RETURNING id',
+            [title, lat, lng]
         );
+
+        // Insert into events table using the marker_id
         await t.none(
-            'INSERT INTO markers(title, latitude, longtitude) VALUES($1, $2)',
-            [title, latitude, longitude]
+            'INSERT INTO events(event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, marker_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
+            [title, date, description, eventStart, eventEnd, location, organizers, markerId.id]
         );
     })
         .then(() => {
@@ -203,7 +203,11 @@ app.post('/createEvent', auth, async (req, res) => {
             });
         })
         .catch((err) => {
-            return console.log(err);
+            console.error('Database transaction error:', err);
+            res.status(500).json({
+                status: 'error',
+                message: 'Failed to create event.',
+            });
         });
 });
 

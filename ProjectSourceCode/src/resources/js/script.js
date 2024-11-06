@@ -5,12 +5,22 @@
  * @param {Object} markerData - Data associated with the marker.
  */
 function initInfoWindow(map, marker, markerData) {
-
+    const infoWindow = new google.maps.InfoWindow({
+        content: `
+            <h3>${markerData.event_name}</h3>
+            <p>${markerData.event_description}</p>
+            <p>${markerData.event_date}</p>
+            <p>${markerData.event_start} - ${markerData.event_end}</p>
+            <p>${markerData.event_location}</p>
+            <p>${markerData.event_organizers}</p>
+        `
+    });
+    return infoWindow;
 }
 
 /**
  * Open the modal for creating an event.
- * @param {Object} marker - The marker instance.
+ * @param {AdvancedMarkerElement} marker - The marker instance.
  */
 function openModal(marker) { //Open event creation modal
     const modal = document.getElementById('markerModal');
@@ -22,13 +32,9 @@ function openModal(marker) { //Open event creation modal
     const locationInput = document.getElementById('location');
     const organizersInput = document.getElementById('organizers');
 
-    /*titleInput.value = markerData.title || '';
-    dateInput.value = markerData.date || '';
-    descriptionInput.value = markerData.description || '';
-    startTimeInput.value = markerData.startTime || '';
-    endTimeInput.value = markerData.endTime || '';
-    locationInput.value = markerData.location || '';
-    organizersInput.value = markerData.organizers || '';*/
+    const position = marker.position;
+    const lat = position.lat;
+    const lng = position.lng;
 
     modal.style.display = 'block';
 
@@ -47,11 +53,11 @@ function openModal(marker) { //Open event creation modal
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, date, description, startTime, endTime, location, organizers, lat: marker.latitude, lng: marker.longitude })
+            body: JSON.stringify({ title, date, description, startTime, endTime, location, organizers, lat, lng })
         })
             .then(response => response.json())
-            .catch(error => {
-                console.error('Error:', error);
+            .catch(err => {
+                console.error(err);
             });
         modal.style.display = 'none';
     });
@@ -73,9 +79,10 @@ function instantiateMarkers(map) {
             map: map,
             title: markerData.title
         });
+        const infoWindow = initInfoWindow(map, marker, markerData);
 
         marker.addListener('click', () => {
-            initInfoWindow(map, marker, markerData);
+            infoWindow.open(map, marker);
         });
     });
 }

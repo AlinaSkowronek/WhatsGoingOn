@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS markers (
     longitude FLOAT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS event (
+CREATE TABLE IF NOT EXISTS events (
     event_id SERIAL PRIMARY KEY,
     event_name VARCHAR(45) NOT NULL,
     event_date TIMESTAMP,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS event_registration (
     registration_status VARCHAR(45),
     FOREIGN KEY (group_id) REFERENCES user_group(group_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (event_id) REFERENCES event(event_id)
+    FOREIGN KEY (event_id) REFERENCES events(event_id)
 );
 
 CREATE TABLE session (

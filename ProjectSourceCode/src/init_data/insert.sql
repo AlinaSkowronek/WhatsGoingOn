@@ -13,7 +13,7 @@ VALUES
     );
 
 INSERT INTO
-    event (event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_status, marker_id)
+    events (event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_status, marker_id)
 VALUES
     (
         'Community Meeting',
