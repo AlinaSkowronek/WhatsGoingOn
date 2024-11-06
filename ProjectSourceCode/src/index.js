@@ -1,3 +1,6 @@
+/**
+ * Module dependencies.
+ */
 const express = require('express');
 const app = express();
 const handlebars = require('express-handlebars');
@@ -8,13 +11,21 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');
+const pgSession = require('connect-pg-simple')(session);
 
+/**
+ * Initialize Handlebars.
+ */
 const hbs = handlebars.create({
     extname: 'hbs',
     layoutsDir: __dirname + '/views/layouts',
     partialsDir: __dirname + '/views/partials',
 });
 
+/**
+ * Database configuration.
+ * @type {Object}
+ */
 const dbConfig = {
     host: 'db',
     port: 5432,
@@ -23,6 +34,9 @@ const dbConfig = {
     password: process.env.POSTGRES_PASSWORD,
 };
 
+/**
+ * Initialize database connection.
+ */
 const db = pgp(dbConfig);
 
 db.connect()
@@ -37,15 +51,24 @@ db.connect()
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
 
 app.engine('hbs', hbs.engine);
+
+/**
+ * Set view engine.
+ */
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.json());
 
 app.use(
     session({
+        store: new pgSession({
+            pgPromise: db,
+            tableName: 'session' // Use another table-name if needed
+        }),
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,
+        cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
     })
 );
 
@@ -55,6 +78,12 @@ app.use(
     })
 );
 
+/**
+ * Authentication middleware.
+ * @param {Object} req - Request object.
+ * @param {Object} res - Response object.
+ * @param {Function} next - Next middleware function.
+ */
 const auth = (req, res, next) => {
     if (!req.session.user) {
         return res.redirect('/login');
@@ -62,7 +91,9 @@ const auth = (req, res, next) => {
     next();
 };
 
-
+/**
+ * Routes.
+ */
 app.get('/', (req, res) => {
     res.redirect('/login');
 });
@@ -86,7 +117,13 @@ app.get('/logout', auth, (req, res) => {
 });
 
 app.get('/home', auth, async (req, res) => {
-    res.render('pages/home');
+    try {
+        const events = await db.any('SELECT * FROM event');
+        res.render('pages/home', { events });
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.render('pages/home', { events: [] });
+    }
 });
 
 app.post('/register', async (req, res) => {
@@ -145,6 +182,7 @@ app.post('/login', async (req, res) => {
 });*/
 
 app.post('/createEvent', auth, async (req, res) => {
+    console.log(req.body);
     const {
         title, date, description, startTime, endTime, location, organizers, latitude, longitude
     } = req.body;

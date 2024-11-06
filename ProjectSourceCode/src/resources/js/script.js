@@ -1,7 +1,17 @@
+/**
+ * Initialize the info window for a marker.
+ * @param {Object} map - The Google Map instance.
+ * @param {Object} marker - The marker instance.
+ * @param {Object} markerData - Data associated with the marker.
+ */
 function initInfoWindow(map, marker, markerData) {
 
 }
 
+/**
+ * Open the modal for creating an event.
+ * @param {Object} marker - The marker instance.
+ */
 function openModal(marker) { //Open event creation modal
     const modal = document.getElementById('markerModal');
     const titleInput = document.getElementById('title');
@@ -51,14 +61,12 @@ function openModal(marker) { //Open event creation modal
     });
 }
 
-function initMap() {
-    const location = { lat: 40.0067984, lng: -105.265396 };
-    const map = new google.maps.Map(document.getElementById('map'), { //Create the map and center it on CU Boulder
-        mapId: 'c23ba2a349b55683',
-        zoom: 16,
-        center: location
-    });
-    const markers = JSON.parse(document.getElementById('map').getAttribute('markers')); //Take all markers from database and put on map
+/**
+ * Instantiate markers on the map.
+ * @param {Object} map - The Google Map instance.
+ */
+function instantiateMarkers(map) {
+    const markers = JSON.parse(document.getElementById('map').getAttribute('markers'));
     markers.forEach(markerData => {
         const marker = new google.maps.marker.AdvancedMarkerElement({
             position: { lat: markerData.latitude, lng: markerData.longitude },
@@ -70,6 +78,20 @@ function initMap() {
             initInfoWindow(map, marker, markerData);
         });
     });
+}
+
+/**
+ * Initialize the Google Map.
+ */
+function initMap() {
+    const location = { lat: 40.0067984, lng: -105.265396 };
+    const map = new google.maps.Map(document.getElementById('map'), { //Create the map and center it on CU Boulder
+        mapId: 'c23ba2a349b55683',
+        zoom: 16,
+        center: location
+    });
+
+    instantiateMarkers(map);
 
     map.addListener('click', (event) => { //Instantiate a marker on click AND confirm
         const marker = new google.maps.marker.AdvancedMarkerElement({
