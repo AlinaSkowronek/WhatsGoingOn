@@ -1,0 +1,12 @@
+11/6/24
+
+Discussion regarding what we all have accomplished + what to have done by next meeting
+
+Justin: database works and is set, some naming conflicts (will update as needed), will try to understand and build units
+Andrew: placed marker and saves event in database and displays on map (can click on it, has info), did other things like put autodocumentor
+        continuing to improve map functionality
+Jake: added homepage functionality, displays events all taking place, create event page was merged, fixing issues with containerization
+Anika/Alina: created the wireframes and came up with ideas to make UI more functional, will have the registration + login + map accessing page done
+
+
+Mary cleared us for team-wide meeting
