@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');
-const pgSession = require('connect-pg-simple')(session);
+//const pgSession = require('connect-pg-simple')(session);
 
 /**
  * Initialize Handlebars.
@@ -61,10 +61,10 @@ app.use(bodyParser.json());
 
 app.use(
     session({
-        store: new pgSession({
+        /*store: new pgSession({
             pgPromise: db,
             tableName: 'session' // Use another table-name if needed
-        }),
+        }),*/
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,

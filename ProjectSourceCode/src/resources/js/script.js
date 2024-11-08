@@ -66,10 +66,6 @@ function openModal(marker, infoWindow) { //Open event creation modal
             });
         modal.style.display = 'none';
     });
-
-    document.getElementById('closeModal').addEventListener('click', function () {
-        modal.style.display = 'none';
-    });
 }
 
 /**
