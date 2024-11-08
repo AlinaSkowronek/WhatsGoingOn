@@ -1,0 +1,54 @@
+Test Cases:
+
+Test Data Descriptions:
+
+  Pages:
+    - Login
+      - valid user input for username and password
+      - login button takes user to map link page
+
+    - Regristration
+      - valid user input for username and password
+      - register button takes user to login page
+
+    - Link to map
+      - Link to map button takes user to map page
+
+    - Map
+      - events pop up when mouse is hovered
+      - valid user input to put events on the map
+
+Test Enviorment Description:
+
+  - Tested on a local host 3000 and navigate through each page
+
+Test Results Description:
+
+  Pages:
+    - Login
+      - when user inputs username and password, data base will already have it stored
+      - when user clicks login button, takes user to map link page
+
+    - Regristration
+      - when user inputs for username and password, info is saved in the data base
+      - when user clicks the register button, takes user to login page
+
+    - Link to map
+      - When user clicks on the link to map button, takes user to map page
+
+    - Map
+      - when user hovers over events, event discription pops up
+      - user can add and remove events and changes will be displayed on the map
+
+User Acceptance Testers Info:
+
+  Testers:
+  
+  	• Justin Costa
+  	•	Jacob Lewis
+  	•	Anika Nagpal
+  	•	Alina Skowronek
+  	•	Andrew Webber
+
+
+
