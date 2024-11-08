@@ -20,6 +20,7 @@
     },
     "devDependencies": {
         "jsdoc": "^4.0.4",
-        "mocha": "^10.8.2"
+        "mocha": "^10.8.2",
+        "chai": "^4.3.6"
     }
 }
