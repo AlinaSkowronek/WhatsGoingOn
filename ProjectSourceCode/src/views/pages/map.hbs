@@ -1,5 +1,5 @@
 <div class="container d-flex justify-content-center align-items-center">
-    <div id="map" apiKey="{{apiKey}}" markers="{{markers}}"></div>
+    <div id="map" apiKey="{{apiKey}}" data-markersAndEvents="{{markersAndEvents}}"></div>
 </div>
 
 <div id="markerModal" class="modal">
@@ -7,26 +7,26 @@
         <div class="modal-content p-4">
             <h4>Marker Information</h4>
             <form id="markerForm">
-                <label for="title">Event Name:</label>
-                <input type="text" class="form-control" id="title" required>
+                <label for="event_name">Event Name:</label>
+                <input type="text" class="form-control" id="event_name" required>
 
-                <label for="date">Date:</label>
-                <input type="date" class="form-control" id="date" required>
+                <label for="event_date">Date:</label>
+                <input type="date" class="form-control" id="event_date" required>
 
-                <label for="description">Description:</label>
-                <textarea class="form-control" id="description" required></textarea>
+                <label for="event_description">Description:</label>
+                <textarea class="form-control" id="event_description" required></textarea>
 
-                <label for="startTime">Start Time:</label>
-                <input type="time" class="form-control" id="startTime" required>
+                <label for="event_start">Start Time:</label>
+                <input type="time" class="form-control" id="event_start" required>
 
-                <label for="endTime">End Time:</label>
-                <input type="time" class="form-control" id="endTime" required>
+                <label for="event_end">End Time:</label>
+                <input type="time" class="form-control" id="event_end" required>
 
-                <label for="location">Location:</label>
-                <input type="text" class="form-control" id="location" required>
+                <label for="event_location">Location:</label>
+                <input type="text" class="form-control" id="event_location" required>
 
-                <label for="organizers">Organizers:</label>
-                <input type="text" class="form-control" id="organizers" required>
+                <label for="event_organizers">Organizers:</label>
+                <input type="text" class="form-control" id="event_organizers" required>
 
                 <button type="submit" class="btn btn-primary mt-3">Submit</button>
             </form>
