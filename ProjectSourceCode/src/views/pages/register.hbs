@@ -1,16 +1,115 @@
 {{> message}}
 
-<div class="container">
-    <form method="POST" action="/register">
-        <div class="mb-3">
-            <label for="username" class="form-label">Username:</label>
-            <input type="text" name="username" id="username" placeholder="Username" required>
-            <label for="password" class="form-label">Password:</label>
-            <input type="text" name="password" id="password" placeholder="Password" required>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's Going On?</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-top: 30px;
+            text-align: center;
+            display: felx;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 48px;
+            font-weight: bold;
+
+        }
+
+        p1 {
+            text-align: center;
+            margin-top: 20px;
+            margin bottom: 0px;
+            font-family: 'Courier New', monospace;
+            font-size: 38px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: bold;
+
+        }
+
+        label {
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+        input {
+            background-color: #EBEBEB;
+            border: 2.5px solid;
+        }
+
+        input::placeholder {
+            color: #808080;
+            /* Gray color for placeholder text */
+        }
+
+        button {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+
+        }
+
+        p {
+            text-align: center;
+            margin-top: 60px;
+            margin bottom: 0px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+        }
+
+        a {
+            text-align: center;
+            margin-top: 0.0000001px;
+            margin bottom: 0px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+
+        }
+    </style>
+</head>
+
+<body style="background-color: rgb(207, 184, 124);">
+    <h1><b>What's Going On?</b></h1>
+    <p1>Register!</p1>
+
+    <div class="container">
+        <form method="POST" action="/register">
+
+            <label for="username" class="form-label">Username</label>
+            <div class="mb-3">
+                <input type="text" name="username" id="username" placeholder="Username" required>
+            </div>
+
+            <label for="password" class="form-label">Password</label>
+            <div class="mb-3">
+                <input type="text" name="password" id="password" placeholder="Password" required>
+            </div>
             <footer>
-                <button type="submit">Submit</button>
+                <button type="submit">Register</button>
             </footer>
-        </div>
+    </div>
 
     </form>
-</div>
+
+    <p>Already have an account?</p>
+    <a href="/login">Login</a>
+    </div>
+</body>
+
+</html>
