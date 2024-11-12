@@ -4,7 +4,8 @@
     <title>What's Going On?</title>
 
     <style>
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             height: 100%;
@@ -28,15 +29,17 @@
 
         .bg-video {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;          /* Send the video behind other content */
-            pointer-events: none; /* Disable pointer events to prevent interaction */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: 20px;
+            height: 20px;
+            z-index: -1;
+
+            /* Disable pointer events to prevent interaction */
         }
-
-
 
         /* Additional styling for other elements... */
     </style>
@@ -44,14 +47,10 @@
 
 <body>
 
-    <iframe 
-    class="bg-video"
-    src="https://www.youtube.com/watch?v=mB8aH8zulT4"
-    frameborder="0"
-    allowfullscreen
-    allow="autoplay"
-    ></iframe> 
-
+    <video class="bg-video" autoplay muted loop>
+        <source src="../../resources/img/Flying Over CU-Boulder.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
     <h1><b>What's Going On?</b></h1>
     <p>Here are all the events currently taking place:</p>
