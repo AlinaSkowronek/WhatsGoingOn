@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS event_registration (
     FOREIGN KEY (event_id) REFERENCES events(event_id)
 );
 
-CREATE TABLE session (
+/*CREATE TABLE session (
     sid VARCHAR NOT NULL PRIMARY KEY,
     sess JSON NOT NULL,
     expire TIMESTAMP(6) NOT NULL
-);
+);*/

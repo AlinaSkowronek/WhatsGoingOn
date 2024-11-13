@@ -1,10 +1,8 @@
 /**
  * Initialize the info window for a marker.
- * @param {Object} map - The Google Map instance.
- * @param {Object} marker - The marker instance.
  * @param {Object} markerData - Data associated with the marker.
  */
-function initInfoWindow(map, marker, markerData) {
+function initInfoWindow(markerData) {
     const infoWindow = new google.maps.InfoWindow({
         content: `
             <h3>${markerData.event_name}</h3>
@@ -22,47 +20,50 @@ function initInfoWindow(map, marker, markerData) {
  * Open the modal for creating an event.
  * @param {AdvancedMarkerElement} marker - The marker instance.
  */
-function openModal(marker) { //Open event creation modal
+function openModal(marker, infoWindow) { //Open event creation modal
     const modal = document.getElementById('markerModal');
-    const titleInput = document.getElementById('title');
-    const dateInput = document.getElementById('date');
-    const descriptionInput = document.getElementById('description');
-    const startTimeInput = document.getElementById('startTime');
-    const endTimeInput = document.getElementById('endTime');
-    const locationInput = document.getElementById('location');
-    const organizersInput = document.getElementById('organizers');
+    const eventNameInput = document.getElementById('event_name');
+    const eventDateInput = document.getElementById('event_date');
+    const eventDescriptionInput = document.getElementById('event_description');
+    const eventStartInput = document.getElementById('event_start');
+    const eventEndInput = document.getElementById('event_end');
+    const eventLocationInput = document.getElementById('event_location');
+    const eventOrganizersInput = document.getElementById('event_organizers');
 
     const position = marker.position;
-    const lat = position.lat;
-    const lng = position.lng;
+    const latitude = position.lat;
+    const longitude = position.lng;
 
     modal.style.display = 'block';
 
     document.getElementById('markerForm').addEventListener('submit', function (event) {
         event.preventDefault();
-        const title = titleInput.value;
-        const date = dateInput.value;
-        const description = descriptionInput.value;
-        const startTime = startTimeInput.value;
-        const endTime = endTimeInput.value;
-        const location = locationInput.value;
-        const organizers = organizersInput.value;
+        const event_name = eventNameInput.value;
+        const event_date = eventDateInput.value;
+        const event_description = eventDescriptionInput.value;
+        const event_start = eventStartInput.value;
+        const event_end = eventEndInput.value;
+        const event_location = eventLocationInput.value;
+        const event_organizers = eventOrganizersInput.value;
+
+        const markerData = { event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, latitude, longitude };
 
         fetch('/createEvent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, date, description, startTime, endTime, location, organizers, lat, lng })
+            body: JSON.stringify(markerData)
         })
             .then(response => response.json())
+            .then(() => {
+                infoWindow.close();
+                const newInfoWindow = initInfoWindow(markerData);
+                newInfoWindow.open(map, marker);
+            })
             .catch(err => {
                 console.error(err);
             });
-        modal.style.display = 'none';
-    });
-
-    document.getElementById('closeModal').addEventListener('click', function () {
         modal.style.display = 'none';
     });
 }
@@ -72,14 +73,15 @@ function openModal(marker) { //Open event creation modal
  * @param {Object} map - The Google Map instance.
  */
 function instantiateMarkers(map) {
-    const markers = JSON.parse(document.getElementById('map').getAttribute('markers'));
+    const markers = JSON.parse(document.getElementById('map').getAttribute('data-markersAndEvents'));
     markers.forEach(markerData => {
         const marker = new google.maps.marker.AdvancedMarkerElement({
             position: { lat: markerData.latitude, lng: markerData.longitude },
             map: map,
-            title: markerData.title
+            title: markerData.event_name
         });
-        const infoWindow = initInfoWindow(map, marker, markerData);
+        
+        const infoWindow = initInfoWindow(markerData);
 
         marker.addListener('click', () => {
             infoWindow.open(map, marker);
@@ -120,12 +122,12 @@ function initMap() {
         google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
             const confirmButton = document.getElementById(confirmButtonId);
             confirmButton.addEventListener('click', function () {
-                openModal(marker);
+                openModal(marker, infoWindow);
             });
             const removeButton = document.getElementById(removeButtonId);
             removeButton.addEventListener('click', function () {
-                marker.setMap(null); 
-                infoWindow.close(); 
+                marker.setMap(null);
+                infoWindow.close();
             });
         });
         /*fetch('/add-marker', {

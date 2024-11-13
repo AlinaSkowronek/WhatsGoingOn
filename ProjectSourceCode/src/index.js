@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');
-const pgSession = require('connect-pg-simple')(session);
+//const pgSession = require('connect-pg-simple')(session);
 
 /**
  * Initialize Handlebars.
@@ -61,10 +61,10 @@ app.use(bodyParser.json());
 
 app.use(
     session({
-        store: new pgSession({
+        /*store: new pgSession({
             pgPromise: db,
             tableName: 'session' // Use another table-name if needed
-        }),
+        }),*/
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,
@@ -108,7 +108,7 @@ app.get('/register', (req, res) => {
 
 app.get('/map', auth, async (req, res) => {
     const markersAndEvents = await db.any('SELECT * FROM markers INNER JOIN events ON markers.id = events.marker_id');
-    res.render('pages/map', { apiKey: process.env.API_KEY, markers: JSON.stringify(markersAndEvents) });
+    res.render('pages/map', { apiKey: process.env.API_KEY, markersAndEvents: JSON.stringify(markersAndEvents) });
 });
 
 app.get('/logout', auth, (req, res) => {
@@ -176,24 +176,24 @@ app.post('/login', async (req, res) => {
 
 app.post('/createEvent', auth, async (req, res) => {
     const {
-        title, date, description, startTime, endTime, location, organizers, lat, lng
+        event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, latitude, longitude
     } = req.body;
 
     // Combine date and time values into TIMESTAMP values
-    const eventStart = `${date} ${startTime}`;
-    const eventEnd = `${date} ${endTime}`;
+    const eventStart = `${event_date} ${event_start}`;
+    const eventEnd = `${event_date} ${event_end}`;
 
     db.tx(async t => {
         // Insert into markers table first to get the marker_id
         const markerId = await t.one(
             'INSERT INTO markers(title, latitude, longitude) VALUES($1, $2, $3) RETURNING id',
-            [title, lat, lng]
+            [event_name, latitude, longitude]
         );
 
         // Insert into events table using the marker_id
         await t.none(
             'INSERT INTO events(event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, marker_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
-            [title, date, description, eventStart, eventEnd, location, organizers, markerId.id]
+            [event_name, event_date, event_description, eventStart, eventEnd, event_location, event_organizers, markerId.id]
         );
     })
         .then(() => {
