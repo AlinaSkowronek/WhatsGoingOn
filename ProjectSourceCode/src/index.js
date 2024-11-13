@@ -94,6 +94,10 @@ const auth = (req, res, next) => {
 /**
  * Routes.
  */
+app.get('/welcome', (req, res) => {
+    res.json({status: 'success', message: 'Welcome!'});
+  });
+
 app.get('/', (req, res) => {
     res.redirect('/login');
 });
@@ -211,5 +215,5 @@ app.post('/createEvent', auth, async (req, res) => {
         });
 });
 
-app.listen(3000);
+module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');
