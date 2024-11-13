@@ -13,6 +13,7 @@ Clone the repository, create a .env file in the root (WhatsGoingOn/) that includ
 
 
 **Release Notes**
+
 11/13/24
 - UI team completed UI for said pages
 - UI team will work on dynamically resizing UI for displays
