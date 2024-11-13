@@ -1,0 +1,15 @@
+Jake -
+Got docker working and worked on organizer login. Continuing working on organizer redirect endpoints with the different privileges between each user. Working on separating user map from organizer map.
+
+Alina -
+Finished login UI and register UI. Made video for home page work. Next steps are to work on the map page and refine the UI for events page. Working on dynamically resizing the UI based on screen size.
+
+Anika -
+Made home page UI aside from video. Next steps are to work on the map page and refine the UI for events page. Working on dynamically resizing the UI based on screen size.
+
+Andrew -
+Map and events page is able to be updated and reflected well. Work on organizer privileges and event map, making the events different colors based on what type of event it is. Also working on a calendar page to list all events. Working on separating user map from organizer map.
+
+
+Justin -
+Did most of the setup for unit testing and implemented the lab content into the project. This week implementing a robust set of unit tests based on project needs. Getting important unit test recommendations from other project members based on what is a hassle to test manually.
