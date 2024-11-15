@@ -136,7 +136,10 @@ app.post('/register', async (req, res) => {
             return res.render('pages/register', { message: 'Username already taken.' });
         }
 
-        await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash]);
+        let organizer = req.body.organizerCheckbox === "true";
+
+        await db.none('INSERT INTO users(username, password, organizer) VALUES($1, $2, $3)', [req.body.username, hash, organizer]);
+
         res.redirect('/login');
     } catch (err) {
         console.error('Registration error:', err);
@@ -150,6 +153,11 @@ app.post('/login', async (req, res) => {
         const match = await bcrypt.compare(req.body.password, user.password);
         if (match) {
             req.session.user = req.body.username;
+            if (req.session.user.organizer) {
+                console.log('got it');
+                res.render('pages/map', { message: 'Logged in as an event organizer' })
+            }
+            console.log('did not');
             res.redirect('/home');
             req.session.save();
         } else {
@@ -177,7 +185,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/createEvent', auth, async (req, res) => {
     const {
-        event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, latitude, longitude
+        event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_type, latitude, longitude
     } = req.body;
 
     // Combine date and time values into TIMESTAMP values
@@ -193,8 +201,8 @@ app.post('/createEvent', auth, async (req, res) => {
 
         // Insert into events table using the marker_id
         await t.none(
-            'INSERT INTO events(event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, marker_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
-            [event_name, event_date, event_description, eventStart, eventEnd, event_location, event_organizers, markerId.id]
+            'INSERT INTO events(event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_type, marker_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            [event_name, event_date, event_description, eventStart, eventEnd, event_location, event_organizers, event_type, markerId.id]
         );
     })
         .then(() => {

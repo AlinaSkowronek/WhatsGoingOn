@@ -13,7 +13,7 @@ VALUES
     );
 
 INSERT INTO
-    events (event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_status, marker_id)
+    events (event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_status, event_type, marker_id)
 VALUES
     (
         'Community Meeting',
@@ -24,6 +24,7 @@ VALUES
         'Community Center',
         'John Doe, Jane Smith',
         'Scheduled',
+        'meetup',
         1
     ),
     (
@@ -35,5 +36,6 @@ VALUES
         'City Park',
         'Alice Johnson, Bob Brown',
         'Scheduled',
+        'volunteering',
         2
     );

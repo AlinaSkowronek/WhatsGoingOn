@@ -86,7 +86,13 @@ describe('User Registration API - Failure Cases', () => { //checks if incorrect 
     });
 });
 
-/* I had to comment this out because there was inconsistent results for different people's docker compose. Had to let development continue.
+/* Commented out because UI work does not want to constantly remove the database volume.
+Uncomment this to test database insert of events, but have to do 'docker
+compose down -v' between restarts or it will fail.
+*/
+
+
+/* -- REMOVE
 describe('POST /createEvent', () => { // These tests provide a positive test for inserting a marker and a negative test for failure.
     const agent = chai.request.agent(app);
 
@@ -139,7 +145,7 @@ describe('POST /createEvent', () => { // These tests provide a positive test for
         });
     });
 });
-*/
+-- REMOVE*/
 
 
 
