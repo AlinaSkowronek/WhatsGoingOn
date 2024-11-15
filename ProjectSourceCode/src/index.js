@@ -132,10 +132,18 @@ app.post('/register', async (req, res) => {
 
         const exists = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [req.body.username]);
         if (exists) {
+
             return res.render('pages/register', { message: 'Username already taken.' });
         }
-
-        await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash]);
+        const boolean = req.body.organizerCheckbox;
+        if(boolean==="true"){
+            boolean = true;
+            
+        }
+        else{
+            boolean = false;
+        }
+        await db.none('INSERT INTO users(username, password, organizer) VALUES($1, $2, $3)', [req.body.username, hash, boolean]);
         res.redirect('/login');
     } catch (err) {
         console.error('Registration error:', err);
@@ -149,6 +157,11 @@ app.post('/login', async (req, res) => {
         const match = await bcrypt.compare(req.body.password, user.password);
         if (match) {
             req.session.user = req.body.username;
+            if(req.session.user.organizer){
+                console.log('got it');
+                res.render('pages/map', {message : 'Logged in as an event organizer'})
+            }
+            console.log('did not');
             res.redirect('/home');
             req.session.save();
         } else {

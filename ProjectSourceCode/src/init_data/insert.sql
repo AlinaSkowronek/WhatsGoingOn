@@ -37,3 +37,16 @@ VALUES
         'Scheduled',
         2
     );
+    INSERT INTO
+    users (id, username, password, first_name, last_name, organizer, created_date)
+VALUES
+    (
+        17,
+        'organizer_test',
+        'Roscoe12',
+        'jake',
+        'lewis',
+        TRUE,
+        -- Remove the extra comma here
+        '2024-11-12' -- Add a valid date for `created_date`
+    );
