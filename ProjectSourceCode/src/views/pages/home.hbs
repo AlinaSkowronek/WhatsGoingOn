@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,19 +43,6 @@
         }
 
         /* Background Video */
-        .bg-video {
-            position: fixed;
-            top: 51%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 50%;
-            min-height: 50%;
-            width: 500px; /* Adjusted size */
-            height: auto;
-            z-index: -1;
-            object-fit: cover;
-        }
-
 
         /* Map Link Section */
         .map-link-section {
@@ -134,6 +122,19 @@
             font-size: 14px;
             margin: 5px 0;
         }
+
+        .bg-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: 20px;
+            height: 20px;
+            z-index: -1;
+            /* Disable pointer events to prevent interaction */
+        }
     </style>
 </head>
 
@@ -179,4 +180,5 @@
     </div>
 
 </body>
+
 </html>
