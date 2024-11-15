@@ -94,9 +94,6 @@ const auth = (req, res, next) => {
 /**
  * Routes.
  */
-app.get('/welcome', (req, res) => {
-    res.json({status: 'success', message: 'Welcome!'});
-  });
 
 app.get('/', (req, res) => {
     res.redirect('/login');
