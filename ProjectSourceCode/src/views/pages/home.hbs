@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +12,8 @@
             padding: 0;
             height: 100%;
             font-family: Arial, sans-serif;
+            background-color: rgb(207, 184, 124);
+            overflow: hidden;
         }
 
         /* Title Section */
@@ -19,6 +23,8 @@
             font-size: 48px;
             font-weight: bold;
             margin-top: 10px;
+            z-index: 2;
+            position: relative;
         }
 
         h1 {
@@ -49,23 +55,65 @@
             object-fit: cover;
         }
 
-        /* Event List Section */
-        .event-list-section {
+
+        /* Map Link Section */
+        .map-link-section {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+        }
+
+        .map-link {
+            font-size: 18px;
+            color: #000000;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+        }
+
+        /* Event List Section - Minimized with hover to expand */
+        .event-list-container {
             position: absolute;
             bottom: 3%;
             left: 50%;
             transform: translateX(-50%);
-            width: 100%; /* Adjust the width as needed */
-            background-color: rgba(0, 0, 0, 0.7); /* Optional overlay for better readability */
-            color: white;
-            padding: 20px;
+            width: 90%;
             text-align: center;
-            z-index: 1;
+            z-index: 2;
         }
 
-        .event-list-section p {
-            font-family: 'Courier New', monospace;
+        .event-list-title {
             font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            top: -15px;
+        }
+
+        /* Hidden event list initially */
+        .event-list {
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        /* Show events to hover over the title */
+        .event-list-container:hover .event-list {
+            display: block;
         }
 
         .card {
@@ -73,8 +121,7 @@
             color: #333;
             border-radius: 8px;
             padding: 15px;
-            margin: 10px;
-            width: 250px;
+            margin: 10px 0;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -87,31 +134,12 @@
             font-size: 14px;
             margin: 5px 0;
         }
-
-        /* Map Link Section */
-        .map-link-section {
-            position: relative;
-            bottom: -210px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            width: 100%;
-        }
-
-        .map-link {
-            font-size: 18px;
-            color: #000000;
-            font-weight: bold;
-            text-decoration: none;
-            padding: 10px 20px;
-            background-color: #fafafa;
-            border-radius: 8px;
-        }
     </style>
 </head>
 
-<body style="background-color: rgb(207, 184, 124);">
+<body>
 
+    <!-- Background Video -->
     <video class="bg-video" autoplay muted loop>
         <source src="../../resources/img/Flying Over CU-Boulder.mp4" type="video/mp4">
         Your browser does not support the video tag.
@@ -122,36 +150,33 @@
         <h1><b>What's Going On?</b></h1>
     </div>
 
-    <!-- Map Link Section (Still positioned relatively, so it remains visible) -->
+    <!-- Map Link Section -->
     <div class="map-link-section">
         <a href="/map" class="map-link">Try out the map</a>
     </div>
 
-    <!-- Event List Section (Positioned at the bottom) -->
-    <div class="event-list-section">
-        <p>Here are all the events currently taking place:</p>
-        <div class="container text-center">
-            <div class="row align-items-start">
-                {{#if events.length}}
-                {{#each events}}
-                <div class="col-md-4">
-                    <div class="hobby-card-{{@index}}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{event_name}}</h5>
-                            <p class="card-text">{{event_date}}</p>
-                            <p class="card-text">{{event_location}}</p>
-                            <p class="card-text">{{event_description}}</p>
-                        </div>
+    <!-- Event List Section -->
+    <div class="event-list-container">
+        <div class="event-list-title">Here are all the events currently taking place</div>
+        <div class="event-list">
+            <div class="container text-center">
+                <div class="row align-items-start">
+                    {{#if events.length}}
+                    {{#each events}}
+                    <div class="card">
+                        <h5 class="card-title">{{event_name}}</h5>
+                        <p class="card-text">{{event_date}}</p>
+                        <p class="card-text">{{event_location}}</p>
+                        <p class="card-text">{{event_description}}</p>
                     </div>
-                </div>
-                {{/each}}
-                {{else}}
-                <div class="col-12">
+                    {{/each}}
+                    {{else}}
                     <p>No events found. Please check back later.</p>
+                    {{/if}}
                 </div>
-                {{/if}}
             </div>
         </div>
     </div>
 
 </body>
+</html>
