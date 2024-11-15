@@ -1,3 +1,6 @@
+let markersArray = [];
+let map;
+
 /**
  * Initialize the info window for a marker.
  * @param {Object} markerData - Data associated with the marker.
@@ -11,6 +14,7 @@ function initInfoWindow(markerData) {
             <p>${markerData.event_start} - ${markerData.event_end}</p>
             <p>${markerData.event_location}</p>
             <p>${markerData.event_organizers}</p>
+            <p>${markerData.event_type}</p>
         `
     });
     return infoWindow;
@@ -29,6 +33,7 @@ function openModal(marker, infoWindow) { //Open event creation modal
     const eventEndInput = document.getElementById('event_end');
     const eventLocationInput = document.getElementById('event_location');
     const eventOrganizersInput = document.getElementById('event_organizers');
+    const eventTypeInput = document.getElementById('event_type');
 
     const position = marker.position;
     const latitude = position.lat;
@@ -45,8 +50,11 @@ function openModal(marker, infoWindow) { //Open event creation modal
         const event_end = eventEndInput.value;
         const event_location = eventLocationInput.value;
         const event_organizers = eventOrganizersInput.value;
+        const event_type = eventTypeInput.value;
 
-        const markerData = { event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, latitude, longitude };
+        const markerData = {
+             event_name, event_date, event_description, event_start, event_end,
+                 event_location, event_organizers, event_type, latitude, longitude };
 
         fetch('/createEvent', {
             method: 'POST',
@@ -68,24 +76,67 @@ function openModal(marker, infoWindow) { //Open event creation modal
     });
 }
 
-/**
- * Instantiate markers on the map.
- * @param {Object} map - The Google Map instance.
- */
-function instantiateMarkers(map) {
+function assignMarkerColor(markerData) {
+    const event_type = markerData.event_type;
+    let backgroundColor;
+    switch (event_type) {
+        case 'conference':
+            backgroundColor = '#FF0000';
+            break;
+        case 'meetup':
+            backgroundColor = '#00FF00';
+            break;
+        case 'workshop':
+            backgroundColor = '#0000FF';
+            break;
+        case 'seminar':
+            backgroundColor = '#FFFF00';
+            break;
+        case 'party':
+            backgroundColor = '#FF00FF';
+            break;
+        case 'volunteering':
+            backgroundColor = '#00FFFF';
+            break;
+        default:
+            backgroundColor = '#FFFFFF';
+    }
+    return backgroundColor;
+}
+
+// Import the PinElement from the marker library
+async function loadPinElement() {
+    const { PinElement } = await google.maps.importLibrary("marker");
+    return PinElement;
+}
+
+async function instantiateMarkers(mapInstance) {
     const markers = JSON.parse(document.getElementById('map').getAttribute('data-markersAndEvents'));
+    const PinElement = await loadPinElement();
+
     markers.forEach(markerData => {
+        const backgroundColor = assignMarkerColor(markerData);
+        const pinColor = new PinElement({
+            background: backgroundColor,
+            borderColor: backgroundColor,
+            glyphColor: backgroundColor,
+            scale: 1
+        });
+
         const marker = new google.maps.marker.AdvancedMarkerElement({
             position: { lat: markerData.latitude, lng: markerData.longitude },
-            map: map,
-            title: markerData.event_name
+            map: mapInstance,
+            title: markerData.event_name,
+            content: pinColor.element
         });
-        
+
         const infoWindow = initInfoWindow(markerData);
 
         marker.addListener('click', () => {
-            infoWindow.open(map, marker);
+            infoWindow.open(mapInstance, marker);
         });
+
+        markersArray.push(marker);
     });
 }
 
@@ -94,7 +145,7 @@ function instantiateMarkers(map) {
  */
 function initMap() {
     const location = { lat: 40.0067984, lng: -105.265396 };
-    const map = new google.maps.Map(document.getElementById('map'), { //Create the map and center it on CU Boulder
+    map = new google.maps.Map(document.getElementById('map'), { //Create the map and center it on CU Boulder
         mapId: 'c23ba2a349b55683',
         zoom: 16,
         center: location
@@ -153,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!mapElement) {
         return;
     }
-    const apiKey = document.getElementById('map').getAttribute('apiKey');
+    const apiKey = mapElement.getAttribute('apiKey');
     if (typeof google === 'object' && typeof google.maps === 'object') {
         initMap();
     } else {
@@ -167,4 +218,12 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         document.head.appendChild(script);
     }
+
+    document.getElementById('toggleMarkersOn').addEventListener('click', function () {
+        markersArray.forEach(marker => marker.setMap(map));
+    });
+
+    document.getElementById('toggleMarkersOff').addEventListener('click', function () {
+        markersArray.forEach(marker => marker.setMap(null));
+    });
 });

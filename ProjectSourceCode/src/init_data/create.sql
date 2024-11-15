@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS events (
     event_organizers VARCHAR(255),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     event_status VARCHAR(20),
+    event_type VARCHAR(100),
     marker_id INT,
     FOREIGN KEY (marker_id) REFERENCES markers(id)
 );
