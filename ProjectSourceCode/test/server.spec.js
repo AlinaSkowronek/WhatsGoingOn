@@ -121,6 +121,7 @@ describe('POST /createEvent', () => { // These tests provide a positive test for
             event_end: '12:00:00',
             event_location: '123 Event St.',
             event_organizers: 'Organizer Name',
+            event_type: 'other',
             latitude: 40.7128,
             longitude: -74.0060
         };
