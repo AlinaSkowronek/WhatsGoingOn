@@ -154,10 +154,10 @@ app.post('/login', async (req, res) => {
         if (match) {
             req.session.user = req.body.username;
             if (req.session.user.organizer) {
-                console.log('got it');
+               // console.log('got it');
                 res.render('pages/map', { message: 'Logged in as an event organizer' })
             }
-            console.log('did not');
+           // console.log('did not');
             res.redirect('/home');
             req.session.save();
         } else {
@@ -168,20 +168,6 @@ app.post('/login', async (req, res) => {
         res.render('pages/register', { message: 'User does not exist.' });
     }
 });
-
-/*app.post('/add-marker', auth, async (req, res) => {
-    const { title, latitude, longitude } = req.body;
-    await db.none('INSERT INTO markers(title, latitude, longitude) VALUES($1, $2, $3)', [title, latitude, longitude])
-        .then(() => {
-            res.status(201).json({
-                status: 'success',
-                message: 'Marker added successfully!',
-            });
-        })
-        .catch((err) => {
-            return console.log(err);
-        });
-});*/
 
 app.post('/createEvent', auth, async (req, res) => {
     const {

@@ -1,63 +1,70 @@
-<div class="map-container">
-    <div class="container d-flex justify-content-center align-items-center">
-        <div id="map" apiKey="{{apiKey}}" data-markersAndEvents="{{markersAndEvents}}"></div>
-    </div>
+<head>
+    <script src="../../resources/js/script.js" defer></script>
+</head>
 
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="markerToggleDropdown"
-            data-bs-toggle="dropdown" aria-expanded="false">
-            Toggle Markers
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="markerToggleDropdown">
-            <li><a class="dropdown-item" href="#" id="toggleMarkersOn">Show Markers</a></li>
-            <li><a class="dropdown-item" href="#" id="toggleMarkersOff">Hide Markers</a></li>
-        </ul>
-    </div>
-</div>
-
-<div id="markerModal" class="modal">
-    <div class="modal-dialog modal-lg" style="max-width:500px; max-height:12rem">
-        <div class="modal-content p-4">
-            <h4>Marker Information</h4>
-            <form id="markerForm">
-                <label for="event_name">Event Name:</label>
-                <input type="text" class="form-control" id="event_name" required>
-
-                <label for="event_date">Date:</label>
-                <input type="date" class="form-control" id="event_date" required>
-
-                <label for="event_description">Description:</label>
-                <textarea class="form-control" id="event_description" required></textarea>
-
-                <label for="event_start">Start Time:</label>
-                <input type="time" class="form-control" id="event_start" required>
-
-                <label for="event_end">End Time:</label>
-                <input type="time" class="form-control" id="event_end" required>
-
-                <label for="event_location">Location:</label>
-                <input type="text" class="form-control" id="event_location" required>
-
-                <label for="event_organizers">Organizers:</label>
-                <input type="text" class="form-control" id="event_organizers" required>
-
-                <label for="event_type">Event Type:</label>
-                <select class="form-control" id="event_type" required>
-                    <option value="conference">Conference</option>
-                    <option value="meetup">Meetup</option>
-                    <option value="workshop">Workshop</option>
-                    <option value="seminar">Seminar</option>
-                    <option value="party">Party</option>
-                    <option value="volunteering">Volunteering</option>
-                    <option value="other">Other</option>
-                </select>
-
-                <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                <button id="closeModal" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </form>
+<body>
+    <div class="map-container">
+        <div class="container d-flex justify-content-center align-items-center">
+            <div id="map" apiKey="{{apiKey}}" data-markersAndEvents="{{markersAndEvents}}"></div>
         </div>
-        <div class="modal-footer">
 
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="markerToggleDropdown"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Toggle Markers
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="markerToggleDropdown">
+                <li><a class="dropdown-item" href="#" id="toggleMarkersOn">Show Markers</a></li>
+                <li><a class="dropdown-item" href="#" id="toggleMarkersOff">Hide Markers</a></li>
+            </ul>
         </div>
     </div>
-</div>
+
+    <div id="markerModal" class="modal">
+        <div class="modal-dialog modal-lg" style="max-width:500px; max-height:12rem">
+            <div class="modal-content p-4">
+                <h4>Marker Information</h4>
+                <form id="markerForm">
+                    <label for="event_name">Event Name:</label>
+                    <input type="text" class="form-control" id="event_name" required>
+
+                    <label for="event_date">Date:</label>
+                    <input type="date" class="form-control" id="event_date" required>
+
+                    <label for="event_description">Description:</label>
+                    <textarea class="form-control" id="event_description" required></textarea>
+
+                    <label for="event_start">Start Time:</label>
+                    <input type="time" class="form-control" id="event_start" required>
+
+                    <label for="event_end">End Time:</label>
+                    <input type="time" class="form-control" id="event_end" required>
+
+                    <label for="event_location">Location:</label>
+                    <input type="text" class="form-control" id="event_location" required>
+
+                    <label for="event_organizers">Organizers:</label>
+                    <input type="text" class="form-control" id="event_organizers" required>
+
+                    <label for="event_type">Event Type:</label>
+                    <select class="form-control" id="event_type" required>
+                        <option value="conference">Conference</option>
+                        <option value="meetup">Meetup</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="party">Party</option>
+                        <option value="volunteering">Volunteering</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div class="button-container mt-3">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button id="closeModal" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</body>
