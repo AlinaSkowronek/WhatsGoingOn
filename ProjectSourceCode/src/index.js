@@ -109,7 +109,25 @@ app.get('/register', (req, res) => {
 
 app.get('/map', auth, async (req, res) => {
     const markersAndEvents = await db.any('SELECT * FROM markers INNER JOIN events ON markers.id = events.marker_id');
+    let organizer = req.session.user.organizer;
+    // console.log('session:', req.session);
+    // console.log('user', req.session.user.username);
+    // console.log('organizer', req.session.user.organizer);
+    
+    // console.log('in the map api the user is: ');
+    // console.log(organizer);
+    if(organizer){
+        //console.log('user is an organizer');
+        res.render('pages/map', {
+            apiKey: process.env.API_KEY,
+            markersAndEvents: JSON.stringify(markersAndEvents),
+            message: 'Logged in as an event organizer'
+        });
+    }
+    else{
+        //console.log('user is not an organizer');
     res.render('pages/map', { apiKey: process.env.API_KEY, markersAndEvents: JSON.stringify(markersAndEvents) });
+    }
 });
 
 app.get('/logout', auth, (req, res) => {
@@ -133,13 +151,18 @@ app.post('/register', async (req, res) => {
 
         const exists = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [req.body.username]);
         if (exists) {
+
             return res.render('pages/register', { message: 'Username already taken.' });
         }
-
-        let organizer = req.body.organizerCheckbox === "true";
-
-        await db.none('INSERT INTO users(username, password, organizer) VALUES($1, $2, $3)', [req.body.username, hash, organizer]);
-
+        let boolean = req.body.organizerCheckbox;
+        if(boolean==="true"){
+            boolean = true;
+            
+        }
+        else{
+            boolean = false;
+        }
+        await db.none('INSERT INTO users(username, password, organizer) VALUES($1, $2, $3)', [req.body.username, hash, boolean]);
         res.redirect('/login');
     } catch (err) {
         console.error('Registration error:', err);
@@ -149,17 +172,26 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     try {
-        const user = await db.one('SELECT password FROM users WHERE username = $1', req.body.username);
+        const user = await db.one('SELECT password FROM users WHERE username = $1', [req.body.username]);
+        const isUserOrganizer = await db.one('SELECT organizer FROM users WHERE username = $1', [req.body.username]);
         const match = await bcrypt.compare(req.body.password, user.password);
+    
+        //let organizer = await db.one('SELECT organizer FROM users WHERE username = $1', req.body.username);
         if (match) {
-            req.session.user = req.body.username;
-            if (req.session.user.organizer) {
-               // console.log('got it');
-                res.render('pages/map', { message: 'Logged in as an event organizer' })
+            req.session.user = {
+                username: user.username,
+                organizer: isUserOrganizer.organizer
+            };
+            //console.log(organizer);
+            if(isUserOrganizer.organizer){
+              //  console.log('got it');
+                res.redirect('/map');
             }
+            else{
            // console.log('did not');
             res.redirect('/home');
             req.session.save();
+            }
         } else {
             res.render('pages/login', { message: 'Incorrect password.' });
         }
