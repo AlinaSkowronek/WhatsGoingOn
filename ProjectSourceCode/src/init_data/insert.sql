@@ -17,7 +17,7 @@ INSERT INTO
 VALUES
     (
         'Community Meeting',
-        '2024-10-01',
+        '2023-10-01 10:00:00',
         'A meeting to discuss community issues.',
         '2024-11-01 10:00:00',
         '2024-11-01 12:00:00',
@@ -29,7 +29,7 @@ VALUES
     ),
     (
         'Charity Run',
-        '2024-10-05',
+        '2023-10-05 08:00:00',
         'A charity run to raise funds for local schools.',
         '2024-11-05 08:00:00',
         '2024-11-05 11:00:00',

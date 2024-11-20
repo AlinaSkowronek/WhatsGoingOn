@@ -18,10 +18,10 @@ CREATE TABLE IF NOT EXISTS markers (
 CREATE TABLE IF NOT EXISTS events (
     event_id SERIAL PRIMARY KEY,
     event_name VARCHAR(45) NOT NULL,
-    event_date TIMESTAMP,
+    event_date DATE,
     event_description VARCHAR(500),
-    event_start TIMESTAMP,
-    event_end TIMESTAMP,
+    event_start TIMESTAMP WITHOUT TIME ZONE,
+    event_end TIMESTAMP WITHOUT TIME ZONE,
     event_location VARCHAR(100),
     event_organizers VARCHAR(255),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

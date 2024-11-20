@@ -145,6 +145,34 @@ app.get('/home', auth, async (req, res) => {
     }
 });
 
+app.get('/calendar', auth, async (req, res) => {
+    try {
+        const events = await db.any('SELECT event_name, event_date, event_start, event_end, event_location FROM events');
+        res.render('pages/events', { events });
+    } catch (error) {
+        console.error('Error fetching events for calendar:', error.message);
+        res.render('pages/events', { events: [] });
+    }
+});
+
+app.get('/api/events', auth, async (req, res) => {
+    try {
+        const events = await db.any('SELECT event_id, event_name, event_date, event_start, event_end, event_location FROM events');
+        const formattedEvents = events.map(event => ({
+            id: event.event_id,
+            title: event.event_name,
+            start: `${new Date(event.event_start).toISOString()}`,
+            end: `${new Date(event.event_end).toISOString()}`,
+            location: event.event_location
+        }));
+        console.log('Formatted Events:', formattedEvents);
+        res.json(formattedEvents);
+    } catch (error) {
+        console.error('Error fetching events for API:', error.message);
+        res.status(500).json({ error: 'Failed to fetch events.' });
+    }
+});
+
 app.post('/register', async (req, res) => {
     try {
         const hash = await bcrypt.hash(req.body.password, 10);
