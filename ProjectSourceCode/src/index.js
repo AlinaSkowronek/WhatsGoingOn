@@ -157,15 +157,16 @@ app.get('/calendar', auth, async (req, res) => {
 
 app.get('/api/events', auth, async (req, res) => {
     try {
-        const events = await db.any('SELECT event_id, event_name, event_date, event_start, event_end, event_location FROM events');
+        const events = await db.any('SELECT event_id, event_name, event_date, event_start, event_end, event_location, event_type FROM events');
         const formattedEvents = events.map(event => ({
             id: event.event_id,
             title: event.event_name,
             start: `${new Date(event.event_start).toISOString()}`,
             end: `${new Date(event.event_end).toISOString()}`,
-            location: event.event_location
+            location: event.event_location,
+            type: event.event_type
         }));
-        console.log('Formatted Events:', formattedEvents);
+        //console.log('Formatted Events:', formattedEvents);
         res.json(formattedEvents);
     } catch (error) {
         console.error('Error fetching events for API:', error.message);
