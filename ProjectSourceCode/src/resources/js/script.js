@@ -1,5 +1,6 @@
 let markersArray = [];
 let map;
+let currentInfoWindow = null;
 
 /**
  * Initialize the info window for a marker.
@@ -53,8 +54,9 @@ function openModal(marker, infoWindow) { //Open event creation modal
         const event_type = eventTypeInput.value;
 
         const markerData = {
-             event_name, event_date, event_description, event_start, event_end,
-                 event_location, event_organizers, event_type, latitude, longitude };
+            event_name, event_date, event_description, event_start, event_end,
+            event_location, event_organizers, event_type, latitude, longitude
+        };
 
         fetch('/createEvent', {
             method: 'POST',
@@ -132,12 +134,31 @@ async function instantiateMarkers(mapInstance) {
 
         const infoWindow = initInfoWindow(markerData);
 
-        marker.addListener('click', () => {
+        marker.addListener('click', (event) => {
+            event.stop(); // Prevent default behavior
             infoWindow.open(mapInstance, marker);
         });
 
         markersArray.push(marker);
     });
+}
+
+let createEventMode = false;
+const createEventButton = document.getElementById('enterCreateEventMode');
+
+function changeCreateEventMode() {
+    if (createEventMode) {
+        map.setOptions({ draggable: true });
+        createEventMode = false;
+        createEventButton.innerHTML = 'Enter Create Event Mode';
+        createEventButton.style.backgroundColor = 'green';
+    }
+    else {
+        map.setOptions({ draggable: false });
+        createEventMode = true;
+        createEventButton.innerHTML = 'Exit Create Event Mode';
+        createEventButton.style.backgroundColor = 'red';
+    }
 }
 
 /**
@@ -148,12 +169,16 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), { //Create the map and center it on CU Boulder
         mapId: 'c23ba2a349b55683',
         zoom: 16,
-        center: location
+        center: location,
+        clickableIcons: false // Make labels not clickable
     });
 
     instantiateMarkers(map);
 
     map.addListener('click', (event) => { //Instantiate a marker on click AND confirm
+        if (!createEventMode) {
+            return;
+        }
         const marker = new google.maps.marker.AdvancedMarkerElement({
             position: event.latLng,
             map: map,
@@ -168,17 +193,24 @@ function initMap() {
                 <button id="${removeButtonId}">Remove</button>
             `
         });
+
+        if (currentInfoWindow) {
+            currentInfoWindow.close();
+        }
+        currentInfoWindow = infoWindow;
         infoWindow.open(map, marker);
 
         google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
             const confirmButton = document.getElementById(confirmButtonId);
             confirmButton.addEventListener('click', function () {
+                changeCreateEventMode();
                 openModal(marker, infoWindow);
             });
             const removeButton = document.getElementById(removeButtonId);
             removeButton.addEventListener('click', function () {
                 marker.setMap(null);
                 infoWindow.close();
+                currentInfoWindow = null;
             });
         });
     });
@@ -211,4 +243,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('toggleMarkersOff').addEventListener('click', function () {
         markersArray.forEach(marker => marker.setMap(null));
     });
+
+    createEventButton.addEventListener('click', changeCreateEventMode);
 });

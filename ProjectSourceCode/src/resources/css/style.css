@@ -31,3 +31,11 @@
     justify-content: space-between;
     align-items: center;
 }
+
+#enterCreateEventMode {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    width: 100%;
+}
