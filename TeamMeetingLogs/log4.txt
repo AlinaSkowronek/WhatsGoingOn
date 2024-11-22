@@ -1,0 +1,9 @@
+Progress is going well on the website. Our goal is to be finished by Friday for an early extra credit submission. Before then, we need to
+implement the following:
+1 Need to ensure that student users cannot create events on the map and ensure user privalages are taken care of according to our use diagram, Jake and Andrew
+
+2 Need to implement the functionality of the calender on the student user home page. Andrew and Justin
+
+3 Need to ensure UI is consistent across all pages upon completion of prior two tasks. Alina and Anika
+
+4 Celebrate having a cool website
