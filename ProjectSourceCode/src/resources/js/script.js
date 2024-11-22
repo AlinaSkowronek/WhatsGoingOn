@@ -1,6 +1,7 @@
 let markersArray = [];
 let map;
 let currentInfoWindow = null;
+let currentCreateEventMarker = null;
 
 /**
  * Initialize the info window for a marker.
@@ -68,13 +69,20 @@ function openModal(marker, infoWindow) { //Open event creation modal
             .then(response => response.json())
             .then(() => {
                 infoWindow.close();
-                const newInfoWindow = initInfoWindow(markerData);
-                newInfoWindow.open(map, marker);
+                instantiateMarker(map, markerData);
+                changeCreateEventMode();
+                currentInfoWindow = null;
             })
             .catch(err => {
                 console.error(err);
             });
         modal.style.display = 'none';
+    });
+
+    document.getElementById('closeModal').addEventListener('click', function () {
+        modal.style.display = 'none';
+        currentCreateEventMarker.setMap(null);
+        currentInfoWindow.close();
     });
 }
 
@@ -112,38 +120,42 @@ async function loadPinElement() {
     return PinElement;
 }
 
-async function instantiateMarkers(mapInstance) {
-    const markers = JSON.parse(document.getElementById('map').getAttribute('data-markersAndEvents'));
+async function instantiateMarker(mapInstance, markerData) {
     const PinElement = await loadPinElement();
+    const backgroundColor = assignMarkerColor(markerData);
+    const pinColor = new PinElement({
+        background: backgroundColor,
+        borderColor: backgroundColor,
+        glyphColor: backgroundColor,
+        scale: 1
+    });
+
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+        position: { lat: markerData.latitude, lng: markerData.longitude },
+        map: mapInstance,
+        title: markerData.event_name,
+        content: pinColor.element
+    });
+
+    const infoWindow = initInfoWindow(markerData);
+
+    marker.addListener('click', (event) => {
+        event.stop(); // Prevent default behavior
+        infoWindow.open(mapInstance, marker);
+        if (currentInfoWindow) {
+            currentInfoWindow.close();
+        }
+        currentInfoWindow = infoWindow;
+    });
+
+    markersArray.push(marker);
+}
+
+function instantiateMarkers(mapInstance) {
+    const markers = JSON.parse(document.getElementById('map').getAttribute('data-markersAndEvents'));
 
     markers.forEach(markerData => {
-        const backgroundColor = assignMarkerColor(markerData);
-        const pinColor = new PinElement({
-            background: backgroundColor,
-            borderColor: backgroundColor,
-            glyphColor: backgroundColor,
-            scale: 1
-        });
-
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-            position: { lat: markerData.latitude, lng: markerData.longitude },
-            map: mapInstance,
-            title: markerData.event_name,
-            content: pinColor.element
-        });
-
-        const infoWindow = initInfoWindow(markerData);
-
-        marker.addListener('click', (event) => {
-            event.stop(); // Prevent default behavior
-            infoWindow.open(mapInstance, marker);
-            if (currentInfoWindow) {
-                currentInfoWindow.close();
-            }
-            currentInfoWindow = infoWindow;
-        });
-
-        markersArray.push(marker);
+        instantiateMarker(mapInstance, markerData);
     });
 }
 
@@ -156,6 +168,10 @@ function changeCreateEventMode() {
         createEventMode = false;
         createEventButton.innerHTML = 'Enter Create Event Mode';
         createEventButton.style.backgroundColor = 'green';
+        if (currentCreateEventMarker) {
+            currentCreateEventMarker.setMap(null);
+            currentCreateEventMarker = null;
+        }
     }
     else {
         map.setOptions({ draggable: false });
@@ -188,6 +204,12 @@ function initMap() {
             map: map,
             title: 'New Marker'
         });
+
+        if (currentCreateEventMarker) {
+            currentCreateEventMarker.setMap(null);
+        }
+        currentCreateEventMarker = marker;
+
         const confirmButtonId = `confirmButton-${marker.id}`;
         const removeButtonId = `removeButton-${marker.id}`;
         const infoWindow = new google.maps.InfoWindow({
@@ -211,7 +233,6 @@ function initMap() {
         google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
             const confirmButton = document.getElementById(confirmButtonId);
             confirmButton.addEventListener('click', function () {
-                changeCreateEventMode();
                 openModal(marker, infoWindow);
             });
             const removeButton = document.getElementById(removeButtonId);
