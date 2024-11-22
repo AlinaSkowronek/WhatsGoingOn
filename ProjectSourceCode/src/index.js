@@ -27,7 +27,7 @@ const hbs = handlebars.create({
  * @type {Object}
  */
 const dbConfig = {
-    host: 'db',
+    host: process.env.POSTGRES_HOST,
     port: 5432,
     database: process.env.POSTGRES_DB,
     user: process.env.POSTGRES_USER,
@@ -113,7 +113,7 @@ app.get('/map', auth, async (req, res) => {
     // console.log('session:', req.session);
     // console.log('user', req.session.user.username);
     // console.log('organizer', req.session.user.organizer);
-    
+
     // console.log('in the map api the user is: ');
     // console.log(organizer);
     if(organizer){
@@ -186,7 +186,7 @@ app.post('/register', async (req, res) => {
         let boolean = req.body.organizerCheckbox;
         if(boolean==="true"){
             boolean = true;
-            
+
         }
         else{
             boolean = false;
@@ -204,7 +204,7 @@ app.post('/login', async (req, res) => {
         const user = await db.one('SELECT password FROM users WHERE username = $1', [req.body.username]);
         const isUserOrganizer = await db.one('SELECT organizer FROM users WHERE username = $1', [req.body.username]);
         const match = await bcrypt.compare(req.body.password, user.password);
-    
+
         //let organizer = await db.one('SELECT organizer FROM users WHERE username = $1', req.body.username);
         if (match) {
             req.session.user = {
