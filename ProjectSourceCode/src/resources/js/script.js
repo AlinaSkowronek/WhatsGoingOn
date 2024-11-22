@@ -137,6 +137,10 @@ async function instantiateMarkers(mapInstance) {
         marker.addListener('click', (event) => {
             event.stop(); // Prevent default behavior
             infoWindow.open(mapInstance, marker);
+            if (currentInfoWindow) {
+                currentInfoWindow.close();
+            }
+            currentInfoWindow = infoWindow;
         });
 
         markersArray.push(marker);
@@ -191,13 +195,17 @@ function initMap() {
                 <h3>Create Event Here?</h3>
                 <button id="${confirmButtonId}">Confirm</button>
                 <button id="${removeButtonId}">Remove</button>
-            `
+            `,
+            disableAutoPan: true
         });
 
-        if (currentInfoWindow) {
-            currentInfoWindow.close();
-        }
-        currentInfoWindow = infoWindow;
+        google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
+            const closeButton = document.querySelector('.gm-ui-hover-effect');
+            if (closeButton) {
+                closeButton.style.display = 'none';
+            }
+        });
+
         infoWindow.open(map, marker);
 
         google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
