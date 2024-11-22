@@ -15,7 +15,7 @@ const bcrypt = require('bcryptjs');
 
 const pgp = pgPromise(); //Couldn't find an easier method to do complicated unit tests than actually connecting to the db itself.
 const dbConfig = {
-    host: 'db',
+    host: process.env.POSTGRES_HOST,
     port: 5432,
     database: process.env.POSTGRES_DB,
     user: process.env.POSTGRES_USER,
