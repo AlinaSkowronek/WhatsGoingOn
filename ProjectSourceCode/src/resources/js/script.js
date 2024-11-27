@@ -7,17 +7,82 @@ let currentCreateEventMarker = null;
  * Initialize the info window for a marker.
  * @param {Object} markerData - Data associated with the marker.
  */
+
+function formatDateTime(isoString) {
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+    };
+    return new Date(isoString).toLocaleDateString('en-US', options);
+}
+
 function initInfoWindow(markerData) {
     const infoWindow = new google.maps.InfoWindow({
         content: `
-            <h3>${markerData.event_name}</h3>
-            <p>${markerData.event_description}</p>
-            <p>${markerData.event_date}</p>
-            <p>${markerData.event_start} - ${markerData.event_end}</p>
-            <p>${markerData.event_location}</p>
-            <p>${markerData.event_organizers}</p>
-            <p>${markerData.event_type}</p>
-        `
+            <div style="
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                line-height: 1.5;
+                color: #333;
+                padding: 10px;
+                border-radius: 8px;
+                background-color: #fff;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                max-width: 350px;
+                overflow-wrap: break-word;
+                max-height: 500px;">
+
+                <h2 style="
+                    margin: 0 0 12px 0;
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-align: center;">
+                    ${markerData.event_name}
+                </h2>
+
+                <div style="
+                    border: 1px solid #ddd;
+                    padding: 12px;
+                    border-radius: 8px;
+                    background-color: #f9f9f9;">
+                    <p style="margin: 0 0 10px 0;">
+                        <strong>Description:</strong><br>
+                        ${markerData.event_description}
+                    </p>
+                    <p style="margin: 0 0 10px 0;">
+                        <strong>Date Created:</strong><br>
+                        ${formatDateTime(markerData.event_date)}
+                    </p>
+                    <p style="margin: 0 0 10px 0;">
+                        <strong>Start Time:</strong><br>
+                        ${formatDateTime(markerData.event_start)}
+                    </p>
+                    <p style="margin: 0 0 10px 0;">
+                        <strong>End Time:</strong><br>
+                        ${formatDateTime(markerData.event_end)}
+                    </p>
+                    <p style="margin: 0 0 10px 0;">
+                        <strong>Location:</strong><br>
+                        ${markerData.event_location}
+                    </p>
+                    <p style="margin: 0 0 10px 0;">
+                        <strong>Organizers:</strong><br>
+                        ${markerData.event_organizers}
+                    </p>
+                    <p style="margin: 0;">
+                        <strong>Event Type:</strong><br>
+                        ${markerData.event_type}
+                    </p>
+                </div>
+            </div>
+        `,
+        maxWidth: 350,
+        maxHeight: 500
     });
     return infoWindow;
 }
