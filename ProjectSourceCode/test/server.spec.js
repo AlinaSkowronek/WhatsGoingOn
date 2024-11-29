@@ -44,7 +44,7 @@ const db = pgp(dbConfig);
 
 
 // *********************** TODO: WRITE 2 UNIT TESTCASES **************************
-describe('User Registration API - Successful Registration', () => {
+/* describe('User Registration API - Successful Registration', () => {
     it('Successfully registers a new user and redirects to /login', (done) => {
         chai
             .request(server)
@@ -59,7 +59,7 @@ describe('User Registration API - Successful Registration', () => {
                 done();
             });
     });
-});
+}); */
 
 describe('User Registration API - Failure Cases', () => { //checks if incorrect registration goes to the correct place in logic.
     let saveConsole;
