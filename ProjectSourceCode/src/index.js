@@ -148,10 +148,10 @@ app.get('/home', auth, async (req, res) => {
 
 app.get('/calendar', auth, async (req, res) => {
     try {
-        res.render('pages/events');
+        res.render('pages/calendar');
     } catch (error) {
         console.error('Error fetching events for calendar:', error.message);
-        res.render('pages/events');
+        res.render('pages/calendar');
     }
 });
 

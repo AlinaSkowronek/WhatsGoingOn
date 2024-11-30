@@ -1,4 +1,9 @@
-function assignEventColor(eventData) { //I have no idea how to export a function
+/**
+ * @param {JSON} eventData 
+ * @returns {string}
+ */
+
+function assignEventColor(eventData) {
     const event_type = eventData.type;
     let backgroundColor;
     switch (event_type) {
@@ -29,6 +34,14 @@ function assignEventColor(eventData) { //I have no idea how to export a function
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
 
+    const modal = document.getElementById('eventModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalLocation = document.getElementById('modalLocation');
+    const modalStart = document.getElementById('modalStart');
+    const modalEnd = document.getElementById('modalEnd');
+    const modalClose = document.getElementById('modalClose');
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: {
@@ -43,8 +56,17 @@ document.addEventListener('DOMContentLoaded', function () {
             info.el.style.backgroundColor = backgroundColor;
         },
         eventClick: function(info) {
-            alert('Event: ' + info.event.title + '\nLocation: ' + info.event.extendedProps.location);
+            modalTitle.textContent = info.event.title;
+            modalDescription.textContent = info.event.extendedProps.description || 'No description available';
+            modalLocation.textContent = info.event.extendedProps.location || 'No location specified';
+            modalStart.textContent = info.event.start.toLocaleString();
+            modalEnd.textContent = info.event.end ? info.event.end.toLocaleString() : 'No end time specified';
+            modal.style.display = 'block';
         }
+    });
+
+    modalClose.addEventListener('click', function() {
+        modal.style.display = 'none';
     });
 
     calendar.render();
