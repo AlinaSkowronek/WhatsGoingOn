@@ -42,7 +42,8 @@ const db = pgp(dbConfig);
 db.connect()
     .then(obj => {
         console.log('Database connection successful');
-        obj.done();
+        return obj.none('SET TIME ZONE \'MST\'')
+            .then(() => obj.done());
     })
     .catch(error => {
         console.log('ERROR:', error.message || error);
@@ -108,7 +109,7 @@ app.get('/register', (req, res) => {
 });
 
 app.get('/map', auth, async (req, res) => {
-    const markersAndEvents = await db.any('SELECT * FROM markers INNER JOIN events ON markers.id = events.marker_id');
+    const markersAndEvents = await db.any('SELECT * FROM markers INNER JOIN events ON markers.id = events.marker_id WHERE event_status = \'Scheduled\' AND event_end >= CURRENT_TIMESTAMP');
     let organizer = req.session.user.organizer;
     // console.log('session:', req.session);
     // console.log('user', req.session.user.username);
@@ -116,7 +117,7 @@ app.get('/map', auth, async (req, res) => {
 
     // console.log('in the map api the user is: ');
     // console.log(organizer);
-    if(organizer){
+    if (organizer) {
         //console.log('user is an organizer');
         res.render('pages/map', {
             apiKey: process.env.API_KEY,
@@ -124,9 +125,9 @@ app.get('/map', auth, async (req, res) => {
             message: 'Logged in as an event organizer'
         });
     }
-    else{
+    else {
         //console.log('user is not an organizer');
-    res.render('pages/map', { apiKey: process.env.API_KEY, markersAndEvents: JSON.stringify(markersAndEvents) });
+        res.render('pages/map', { apiKey: process.env.API_KEY, markersAndEvents: JSON.stringify(markersAndEvents) });
     }
 });
 
@@ -137,7 +138,7 @@ app.get('/logout', auth, (req, res) => {
 
 app.get('/home', auth, async (req, res) => {
     try {
-        const events = await db.any('SELECT * FROM events');
+        const events = await db.any('SELECT * FROM events WHERE event_end >= CURRENT_TIMESTAMP');
         res.render('pages/home', { events });
     } catch (error) {
         console.error('Error:', error.message);
@@ -147,30 +148,38 @@ app.get('/home', auth, async (req, res) => {
 
 app.get('/calendar', auth, async (req, res) => {
     try {
-        const events = await db.any('SELECT event_name, event_date, event_start, event_end, event_location FROM events');
-        res.render('pages/events', { events });
+        res.render('pages/events');
     } catch (error) {
         console.error('Error fetching events for calendar:', error.message);
-        res.render('pages/events', { events: [] });
+        res.render('pages/events');
     }
 });
 
 app.get('/api/events', auth, async (req, res) => {
     try {
-        const events = await db.any('SELECT event_id, event_name, event_date, event_start, event_end, event_location, event_type FROM events');
+        const events = await db.any('SELECT event_id, event_name, event_date, event_start AT TIME ZONE \'UTC\' AS event_start, event_end AT TIME ZONE \'UTC\' AS event_end, event_location, event_type FROM events WHERE event_status NOT IN (\'Pending\', \'Denied\')');
         const formattedEvents = events.map(event => ({
             id: event.event_id,
             title: event.event_name,
-            start: `${new Date(event.event_start).toISOString()}`,
-            end: `${new Date(event.event_end).toISOString()}`,
+            start: new Date(event.event_start).toISOString(),
+            end: new Date(event.event_end).toISOString(),
             location: event.event_location,
             type: event.event_type
         }));
-        //console.log('Formatted Events:', formattedEvents);
         res.json(formattedEvents);
     } catch (error) {
         console.error('Error fetching events for API:', error.message);
         res.status(500).json({ error: 'Failed to fetch events.' });
+    }
+});
+
+app.get('/requests', auth, async (req, res) => {
+    if (req.session.user.administrator) {
+        const requestedEvents = await db.any('SELECT * FROM events INNER JOIN users ON events.user_id_author = users.id WHERE events.event_status = \'Pending\'');
+        const deniedEvents = await db.any('SELECT * FROM events INNER JOIN users ON events.user_id_author = users.id WHERE events.event_status = \'Denied\' ');
+        res.render('pages/requests', { requestedEvents, deniedEvents });
+    } else {
+        res.redirect('/home');
     }
 });
 
@@ -183,15 +192,10 @@ app.post('/register', async (req, res) => {
 
             return res.render('pages/register', { message: 'Username already taken.' });
         }
-        let boolean = req.body.organizerCheckbox;
-        if(boolean==="true"){
-            boolean = true;
 
-        }
-        else{
-            boolean = false;
-        }
-        await db.none('INSERT INTO users(username, password, organizer) VALUES($1, $2, $3)', [req.body.username, hash, boolean]);
+        const isOrganizer = req.body.organizerCheckbox === "true";
+
+        await db.none('INSERT INTO users(username, password, organizer) VALUES($1, $2, $3)', [req.body.username, hash, isOrganizer]);
         res.redirect('/login');
     } catch (err) {
         console.error('Registration error:', err);
@@ -201,25 +205,33 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     try {
-        const user = await db.one('SELECT password FROM users WHERE username = $1', [req.body.username]);
+        const user = await db.one('SELECT username, password FROM users WHERE username = $1', [req.body.username]);
         const isUserOrganizer = await db.one('SELECT organizer FROM users WHERE username = $1', [req.body.username]);
+        const isUserAdministrator = await db.one('SELECT administrator FROM users WHERE username = $1', [req.body.username]); 
         const match = await bcrypt.compare(req.body.password, user.password);
 
-        //let organizer = await db.one('SELECT organizer FROM users WHERE username = $1', req.body.username);
         if (match) {
             req.session.user = {
                 username: user.username,
-                organizer: isUserOrganizer.organizer
+                organizer: isUserOrganizer.organizer,
+                administrator: isUserAdministrator.administrator
             };
-            //console.log(organizer);
-            if(isUserOrganizer.organizer){
-              //  console.log('got it');
+            if (req.session.user.username === 'admin') {
+                req.session.user.administrator = true;
+                console.log("Successful admin login");
+                res.redirect('/requests');
+                req.session.save();
+            } else if (req.session.user.administrator) {
+                console.log("Successful admin login");
+                res.redirect('/requests');
+                req.session.save();
+            } else if (req.session.user.organizer) {
                 res.redirect('/map');
-            }
-            else{
-           // console.log('did not');
-            res.redirect('/home');
-            req.session.save();
+                req.session.save();
+            } else {
+                console.log("Successful user login");
+                res.redirect('/home');
+                req.session.save();
             }
         } else {
             res.render('pages/login', { message: 'Incorrect password.' });
@@ -230,14 +242,43 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.put('/acceptEvent', auth, async (req, res) => {
+    if (!req.session.user.administrator) {
+        return res.status(403).json({ message: 'Unauthorized access.' });
+    }
+    try {
+        await db.none('UPDATE events SET event_status = \'Scheduled\' WHERE event_id = $1', [req.body.id]);
+        res.status(200).json({ message: 'Event accepted.' });
+    }
+    catch (err) {
+        console.error('Error accepting event:', error.message);
+        res.status(500).json({ message: 'Failed to accept event.' });
+    }
+
+});
+
+app.put('/denyEvent', auth, async (req, res) => {
+    if (!req.session.user.administrator) {
+        return res.status(403).json({ message: 'Unauthorized access.' });
+    }
+    try {
+        await db.none('UPDATE events SET event_status = \'Denied\' WHERE event_id = $1', [req.body.id]);
+        res.status(200).json({ message: 'Event denied.' });
+    }
+    catch (err) {
+        console.error('Error denying event:', error.message);
+        res.status(500).json({ message: 'Failed to deny event.' });
+    }
+});
+
 app.post('/createEvent', auth, async (req, res) => {
     const {
         event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_type, latitude, longitude
     } = req.body;
 
-    // Combine date and time values into TIMESTAMP values
-    const eventStart = `${event_date} ${event_start}`;
-    const eventEnd = `${event_date} ${event_end}`;
+    // Combine date and time values into TIMESTAMP values in MST format
+    const eventStart = new Date(`${event_date}T${event_start}:00-07:00`).toISOString();
+    const eventEnd = new Date(`${event_date}T${event_end}:00-07:00`).toISOString();
 
     db.tx(async t => {
         // Insert into markers table first to get the marker_id

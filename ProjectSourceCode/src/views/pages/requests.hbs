@@ -1,0 +1,46 @@
+<head>
+    <script src="../../resources/js/requests.js"></script>
+</head>
+
+<body>
+    <div class="requests-dashboard">
+        <h2>Event Requests</h2>
+        <div class="tabs">
+            <button class="tab-button" onclick="showTab('pending')">Pending Requests</button>
+            <button class="tab-button" onclick="showTab('denied')">Denied Requests</button>
+        </div>
+        <div id="pending" class="tab-content">
+            <ul>
+                {{#each requestedEvents as |request|}}
+                <li id='request-{{request.event_id}}'>
+                    <div class="request-details">
+                        <p><strong>Event Name:</strong> {{request.event_name}}</p>
+                        <p><strong>Requested By:</strong> {{request.username}}</p>
+                        <p><strong>Date:</strong> {{request.event_date}}</p>
+                    </div>
+                    <div class="request-actions">
+                        <button class="accept-btn" request-id='{{request.event_id}}' onclick="handleAccept('{{request.event_id}}')">Accept</button>
+                        <button class="deny-btn" request-id='{{request.event_id}}' onclick="handleDeny('{{request.event_id}}')">Deny</button>
+                    </div>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        <div id="denied" class="tab-content" style="display:none;">
+            <ul>
+                {{#each deniedEvents as |event|}}
+                <li id='request-{{event.event_id}}'>
+                    <div class="request-details">
+                        <p><strong>Event Name:</strong> {{event.event_name}}</p>
+                        <p><strong>Requested By:</strong> {{event.username}}</p>
+                        <p><strong>Date:</strong> {{event.event_date}}</p>
+                    </div>
+                    <div class="request-actions">
+                        <button class="accept-btn" request-id='{{event.event_id}}' onclick="handleAccept('{{event.event_id}}')">Undo Deny and Accept</button>
+                    </div>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</body>

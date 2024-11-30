@@ -35,7 +35,18 @@ VALUES
         '2024-11-05 11:00:00',
         'City Park',
         'Alice Johnson, Bob Brown',
-        'Scheduled',
+        'Pending',
         'volunteering',
         2
+    );
+
+INSERT INTO users (username, password, first_name, last_name, organizer, administrator)
+VALUES
+    (
+        'server',
+        'server',
+        'server',
+        'server',
+        FALSE,
+        TRUE
     );

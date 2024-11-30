@@ -56,7 +56,7 @@ function initInfoWindow(markerData) {
                     </p>
                     <p style="margin: 0 0 10px 0;">
                         <strong>Date Created:</strong><br>
-                        ${formatDateTime(markerData.event_date)}
+                        ${formatDateTime(markerData.created_date)}
                     </p>
                     <p style="margin: 0 0 10px 0;">
                         <strong>Start Time:</strong><br>
@@ -84,6 +84,14 @@ function initInfoWindow(markerData) {
         maxWidth: 350,
         maxHeight: 500
     });
+
+    // Add event listener for the closeclick event
+    infoWindow.addListener('closeclick', () => {
+        if (currentInfoWindow === infoWindow) {
+            currentInfoWindow = null;
+        }
+    });
+
     return infoWindow;
 }
 
@@ -91,65 +99,6 @@ function initInfoWindow(markerData) {
  * Open the modal for creating an event.
  * @param {AdvancedMarkerElement} marker - The marker instance.
  */
-function openModal(marker, infoWindow) { //Open event creation modal
-    const modal = document.getElementById('markerModal');
-    const eventNameInput = document.getElementById('event_name');
-    const eventDateInput = document.getElementById('event_date');
-    const eventDescriptionInput = document.getElementById('event_description');
-    const eventStartInput = document.getElementById('event_start');
-    const eventEndInput = document.getElementById('event_end');
-    const eventLocationInput = document.getElementById('event_location');
-    const eventOrganizersInput = document.getElementById('event_organizers');
-    const eventTypeInput = document.getElementById('event_type');
-
-    const position = marker.position;
-    const latitude = position.lat;
-    const longitude = position.lng;
-
-    modal.style.display = 'block';
-
-    document.getElementById('markerForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const event_name = eventNameInput.value;
-        const event_date = eventDateInput.value;
-        const event_description = eventDescriptionInput.value;
-        const event_start = eventStartInput.value;
-        const event_end = eventEndInput.value;
-        const event_location = eventLocationInput.value;
-        const event_organizers = eventOrganizersInput.value;
-        const event_type = eventTypeInput.value;
-
-        const markerData = {
-            event_name, event_date, event_description, event_start, event_end,
-            event_location, event_organizers, event_type, latitude, longitude
-        };
-
-        fetch('/createEvent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(markerData)
-        })
-            .then(response => response.json())
-            .then(() => {
-                infoWindow.close();
-                instantiateMarker(map, markerData);
-                changeCreateEventMode();
-                currentInfoWindow = null;
-            })
-            .catch(err => {
-                console.error(err);
-            });
-        modal.style.display = 'none';
-    });
-
-    document.getElementById('closeModal').addEventListener('click', function () {
-        modal.style.display = 'none';
-        currentCreateEventMarker.setMap(null);
-        currentInfoWindow.close();
-    });
-}
 
 function assignMarkerColor(markerData) {
     const event_type = markerData.event_type;
@@ -206,10 +155,10 @@ async function instantiateMarker(mapInstance, markerData) {
 
     marker.addListener('click', (event) => {
         event.stop(); // Prevent default behavior
-        infoWindow.open(mapInstance, marker);
         if (currentInfoWindow) {
             currentInfoWindow.close();
         }
+        infoWindow.open(mapInstance, marker);
         currentInfoWindow = infoWindow;
     });
 
@@ -231,8 +180,8 @@ function changeCreateEventMode() {
     if (createEventMode) {
         map.setOptions({ draggable: true });
         createEventMode = false;
-        createEventButton.innerHTML = 'Enter Create Event Mode';
-        createEventButton.style.backgroundColor = 'green';
+        createEventButton.innerHTML = 'Create Event';
+        createEventButton.style.backgroundColor = '#4CAF50';
         if (currentCreateEventMarker) {
             currentCreateEventMarker.setMap(null);
             currentCreateEventMarker = null;
@@ -241,7 +190,7 @@ function changeCreateEventMode() {
     else {
         map.setOptions({ draggable: false });
         createEventMode = true;
-        createEventButton.innerHTML = 'Exit Create Event Mode';
+        createEventButton.innerHTML = 'Cancel';
         createEventButton.style.backgroundColor = 'red';
     }
 }
@@ -296,9 +245,10 @@ function initMap() {
         infoWindow.open(map, marker);
 
         google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
+            const modal = document.getElementById('markerModal');
             const confirmButton = document.getElementById(confirmButtonId);
             confirmButton.addEventListener('click', function () {
-                openModal(marker, infoWindow);
+                modal.style.display = 'block';
             });
             const removeButton = document.getElementById(removeButtonId);
             removeButton.addEventListener('click', function () {
@@ -339,4 +289,90 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     createEventButton.addEventListener('click', changeCreateEventMode);
+
+    //Previously openModal()
+
+    const modal = document.getElementById('markerModal');
+
+    const eventNameInput = document.getElementById('event_name');
+    const eventDateInput = document.getElementById('event_date');
+    const eventDescriptionInput = document.getElementById('event_description');
+    const eventStartInput = document.getElementById('event_start');
+    const eventEndInput = document.getElementById('event_end');
+    const eventLocationInput = document.getElementById('event_location');
+    const eventOrganizersInput = document.getElementById('event_organizers');
+    const eventTypeInput = document.getElementById('event_type');
+
+    document.getElementById('markerForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const position = currentCreateEventMarker.position;
+        const latitude = position.lat;
+        const longitude = position.lng;
+        const event_name = eventNameInput.value;
+        const event_date = eventDateInput.value;
+        const event_description = eventDescriptionInput.value;
+        const event_start = eventStartInput.value;
+        const event_end = eventEndInput.value;
+        const event_location = eventLocationInput.value;
+        const event_organizers = eventOrganizersInput.value;
+        const event_type = eventTypeInput.value;
+
+        const markerData = {
+            event_name, event_date, event_description, event_start, event_end,
+            event_location, event_organizers, event_type, latitude, longitude
+        };
+
+        fetch('/createEvent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(markerData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(() => {
+                if (currentInfoWindow) {
+                    currentInfoWindow.close();
+                }
+                instantiateMarker(map, markerData);
+                changeCreateEventMode();
+                currentInfoWindow = null;
+
+                eventNameInput.value = '';
+                eventDateInput.value = '';
+                eventDescriptionInput.value = '';
+                eventStartInput.value = '';
+                eventEndInput.value = '';
+                eventLocationInput.value = '';
+                eventOrganizersInput.value = '';
+                eventTypeInput.value = '';
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+        modal.style.display = 'none';
+    });
+
+    document.getElementById('closeModal').addEventListener('click', function () {
+        modal.style.display = 'none';
+        if (currentCreateEventMarker) {
+            currentCreateEventMarker.setMap(null);
+        }
+        if (currentInfoWindow) {
+            currentInfoWindow.close();
+        }
+        eventNameInput.value = '';
+        eventDateInput.value = '';
+        eventDescriptionInput.value = '';
+        eventStartInput.value = '';
+        eventEndInput.value = '';
+        eventLocationInput.value = '';
+        eventOrganizersInput.value = '';
+        eventTypeInput.value = '';
+    });
 });

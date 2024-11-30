@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(45),
     last_name VARCHAR(45),
     organizer BOOLEAN DEFAULT FALSE,
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    administrator BOOLEAN DEFAULT FALSE,
+    created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS markers (
@@ -20,12 +21,13 @@ CREATE TABLE IF NOT EXISTS events (
     event_name VARCHAR(45) NOT NULL,
     event_date DATE,
     event_description VARCHAR(500),
-    event_start TIMESTAMP WITHOUT TIME ZONE,
-    event_end TIMESTAMP WITHOUT TIME ZONE,
+    event_start TIMESTAMP WITH TIME ZONE,
+    event_end TIMESTAMP WITH TIME ZONE,
     event_location VARCHAR(100),
     event_organizers VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    event_status VARCHAR(20),
+    created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    user_id_author INT DEFAULT 1,
+    event_status VARCHAR(20) DEFAULT 'Pending',
     event_type VARCHAR(100),
     marker_id INT,
     FOREIGN KEY (marker_id) REFERENCES markers(id)
