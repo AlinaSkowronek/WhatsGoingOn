@@ -15,8 +15,13 @@
                 <li id='request-{{request.event_id}}'>
                     <div class="request-details">
                         <p><strong>Event Name:</strong> {{request.event_name}}</p>
-                        <p><strong>Requested By:</strong> {{request.username}}</p>
+                        <p><strong>Requested By:</strong> {{request.username}} <strong>for</strong> {{request.event_organizers}}</p>
                         <p><strong>Date:</strong> {{request.event_date}}</p>
+                        <p><strong>Description:</strong> {{request.event_description}}</p>
+                        <p><strong>Start Time:</strong> {{request.event_start}}</p>
+                        <p><strong>End Time:</strong> {{request.event_end}}</p>
+                        <p><strong>Location:</strong> {{request.event_location}}</p>
+                        <p><strong>Type:</strong> {{request.event_type}}</p>
                     </div>
                     <div class="request-actions">
                         <button class="accept-btn" request-id='{{request.event_id}}' onclick="handleAccept('{{request.event_id}}')">Accept</button>
@@ -32,8 +37,13 @@
                 <li id='request-{{event.event_id}}'>
                     <div class="request-details">
                         <p><strong>Event Name:</strong> {{event.event_name}}</p>
-                        <p><strong>Requested By:</strong> {{event.username}}</p>
+                        <p><strong>Requested By:</strong> {{event.username}} <strong>for</strong> {{event.event_organizers}}</p>
                         <p><strong>Date:</strong> {{event.event_date}}</p>
+                        <p><strong>Description:</strong> {{event.event_description}}</p>
+                        <p><strong>Start Time:</strong> {{event.event_start}}</p>
+                        <p><strong>End Time:</strong> {{event.event_end}}</p>
+                        <p><strong>Location:</strong> {{event.event_location}}</p>
+                        <p><strong>Type:</strong> {{event.event_type}}</p>
                     </div>
                     <div class="request-actions">
                         <button class="accept-btn" request-id='{{event.event_id}}' onclick="handleAccept('{{event.event_id}}')">Undo Deny and Accept</button>

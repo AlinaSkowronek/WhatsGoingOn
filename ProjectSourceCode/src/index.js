@@ -207,12 +207,15 @@ app.post('/login', async (req, res) => {
     try {
         const user = await db.one('SELECT username, password FROM users WHERE username = $1', [req.body.username]);
         const isUserOrganizer = await db.one('SELECT organizer FROM users WHERE username = $1', [req.body.username]);
-        const isUserAdministrator = await db.one('SELECT administrator FROM users WHERE username = $1', [req.body.username]); 
+        const isUserAdministrator = await db.one('SELECT administrator FROM users WHERE username = $1', [req.body.username]);
+        const userId = await db.one('SELECT id FROM users WHERE username = $1', [req.body.username]);
+
         const match = await bcrypt.compare(req.body.password, user.password);
 
         if (match) {
             req.session.user = {
                 username: user.username,
+                id: userId.id,
                 organizer: isUserOrganizer.organizer,
                 administrator: isUserAdministrator.administrator
             };
@@ -287,10 +290,10 @@ app.post('/createEvent', auth, async (req, res) => {
             [event_name, latitude, longitude]
         );
 
-        // Insert into events table using the marker_id
+        // Insert into events table using the marker_id and user_id_author
         await t.none(
-            'INSERT INTO events(event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_type, marker_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-            [event_name, event_date, event_description, eventStart, eventEnd, event_location, event_organizers, event_type, markerId.id]
+            'INSERT INTO events(event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, user_id_author, event_type, marker_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+            [event_name, event_date, event_description, eventStart, eventEnd, event_location, event_organizers, req.session.user.id, event_type, markerId.id]
         );
     })
         .then(() => {
