@@ -27,14 +27,14 @@ To approve requests to create events, create a user with username 'admin'. Acces
 * Andrew Webber
 
 ### Technology Stack
-Docker and Docker Compose - Containerization
-Postgres - Database
-NodeJS - Functionality and Database Interactions
-Google Maps API - Map and Marker Placement for Events
-Bootstrap - CSS Framework
-Handlebars - Templating for Displaying Data
-Mocha - Testing Framework
-Chai - Assertion for Testing
+- Docker and Docker Compose - Containerization
+- Postgres - Database
+- NodeJS - Functionality and Database Interactions
+- Google Maps API - Map and Marker Placement for Events
+- Bootstrap - CSS Framework
+- Handlebars - Templating for Displaying Data
+- Mocha - Testing Framework
+- Chai - Assertion for Testing
 
 
 ### Software Prerequisites
