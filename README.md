@@ -18,6 +18,8 @@ SESSION_SECRET="value"
 API_KEY="Google Maps API Key"
 
 To approve requests to create events, create a user with username 'admin'. Access /requests endpoint as 'admin' to approve events on the map.
+Run 'docker compose up' in the terminal within the (WhatsGoingOn/ProjectSouceCode) folder to create the local host.
+The tests will be ran automatically when the container goes up. Access the website on port 3000 with http://localhost:3000
 
 ### Contributors
 * Justin Costa
