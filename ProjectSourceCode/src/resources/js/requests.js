@@ -1,3 +1,8 @@
+/** 
+ * Triggered on button click to accept a request. Called from either click event on Accept or Undo Deny And Accept button.
+ * @param {number} requestId - The id of the request to accept
+ */
+
 function handleAccept(requestId) {
     const requestElement = document.getElementById("request-" + requestId);
     if (!requestElement) {
@@ -20,6 +25,11 @@ function handleAccept(requestId) {
         });
     console.log('Accepted request:', requestId);
 }
+
+/** 
+ * Triggered on button click to deny a request. Called from click event on Deny button.
+ * @param {number} requestId - The id of the request to deny
+ */
 
 function handleDeny(requestId) {
     const requestElement = document.getElementById("request-" + requestId);
@@ -45,6 +55,11 @@ function handleDeny(requestId) {
         });
     console.log('Denied request:', requestId);
 }
+
+/**
+ * switches between Pending and Denied tabs on request page
+ * @param {*} tabName 
+ */
 
 function showTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => {

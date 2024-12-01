@@ -3,11 +3,6 @@ let map;
 let currentInfoWindow = null;
 let currentCreateEventMarker = null;
 
-/**
- * Initialize the info window for a marker.
- * @param {Object} markerData - Data associated with the marker.
- */
-
 function formatDateTime(isoString) {
     const options = {
         weekday: 'long',
@@ -20,6 +15,12 @@ function formatDateTime(isoString) {
     };
     return new Date(isoString).toLocaleDateString('en-US', options);
 }
+
+/**
+ * Initialize the info window for a marker. 
+ * @param {Object} markerData - Data associated with the marker.
+ * @returns {InfoWindow} 
+ */
 
 function initInfoWindow(markerData) {
     const infoWindow = new google.maps.InfoWindow({
@@ -96,8 +97,9 @@ function initInfoWindow(markerData) {
 }
 
 /**
- * Open the modal for creating an event.
- * @param {AdvancedMarkerElement} marker - The marker instance.
+ * Assigns a color to a marker based on the event type. Used for pin color.
+ * @param {JSON} markerData - Data associated with the marker.
+ * @returns {string} - The color of the marker.
  */
 
 function assignMarkerColor(markerData) {
@@ -133,6 +135,11 @@ async function loadPinElement() {
     const { PinElement } = await google.maps.importLibrary("marker");
     return PinElement;
 }
+
+/**
+ * Initialize the info window for a marker.
+ * @param {Object} mapInstance - Data associated with the marker.
+ */
 
 async function instantiateMarker(mapInstance, markerData) {
     const PinElement = await loadPinElement();
@@ -290,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     createEventButton.addEventListener('click', changeCreateEventMode);
 
-    //Previously openModal()
+    // Handles open and closing Modal for creating an event and submitting the form
 
     const modal = document.getElementById('markerModal');
 

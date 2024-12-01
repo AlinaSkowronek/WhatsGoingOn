@@ -1,0 +1,69 @@
+{{> message}}
+
+<head>
+    <script src="../../resources/js/calendar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 10px;
+        }
+
+        .modal-close {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Event Calendar</h1>
+
+    <div id="calendar"></div>
+
+    <!-- Modal Structure -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <h4 id="modalTitle"></h4>
+            <p id="modalDescription"></p>
+            <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+            <p><strong>Start:</strong> <span id="modalStart"></span></p>
+            <p><strong>End:</strong> <span id="modalEnd"></span></p>
+            <div class="modal-footer">
+                <button id="modalClose" class="modal-close">Close</button>
+            </div>
+        </div>
+    </div>
+</body>
