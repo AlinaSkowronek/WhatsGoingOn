@@ -6,14 +6,14 @@ A website that will show you what's going on at CU Boulder! Event locations are 
 ## Build Instructions
 Clone the repository, create a .env file in the root (WhatsGoingOn/) that includes a google maps API key, session secret and postgres login. The postgres logins can be anything desired, but the google maps API key must be from Google directly. Here is an example with dummy values:
 
-# database credentials
+\# database credentials
 POSTGRES_USER=user
 POSTGRES_HOST =host
 POSTGRES_PASSWORD=password
 POSTGRES_DB=postgres_db
 
 
-# Node vars
+\# Node vars
 SESSION_SECRET="value"
 API_KEY="Google Maps API Key"
 
