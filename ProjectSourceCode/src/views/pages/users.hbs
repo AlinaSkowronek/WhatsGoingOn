@@ -1,0 +1,30 @@
+
+<head>
+    <script src="../../resources/js/users.js"></script>
+</head>
+
+<body>
+    <div class="users-dashboard">
+        <h2>User Management</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Organizer</th>
+                    <th>Administrator</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each users as |user|}}
+                <tr id="user-{{user.id}}">
+                    <td>{{user.username}}</td>
+                    <td><input type="checkbox" class="organizer-checkbox" {{#if user.organizer}}checked{{/if}}></td>
+                    <td><input type="checkbox" class="administrator-checkbox" {{#if user.administrator}}checked{{/if}}></td>
+                    <td><button onclick="updateUser('{{user.id}}')">Update</button></td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</body>

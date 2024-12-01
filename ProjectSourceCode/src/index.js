@@ -183,6 +183,33 @@ app.get('/requests', auth, async (req, res) => {
     }
 });
 
+app.get('/users', auth, async (req, res) => {
+    if (!req.session.user.administrator) {
+        return res.redirect('/home');
+    }
+    try {
+        const users = await db.any('SELECT id, username, organizer, administrator FROM users');
+        res.render('pages/users', { users });
+    } catch (error) {
+        console.error('Error fetching users:', error.message);
+        res.render('pages/users', { users: [] });
+    }
+});
+
+app.put('/updateUser', auth, async (req, res) => {
+    if (!req.session.user.administrator) {
+        return res.status(403).json({ message: 'Unauthorized access.' });
+    }
+    const { id, organizer, administrator } = req.body;
+    try {
+        await db.none('UPDATE users SET organizer = $1, administrator = $2 WHERE id = $3', [organizer, administrator, id]);
+        res.status(200).json({ message: 'User updated successfully.' });
+    } catch (error) {
+        console.error('Error updating user:', error.message);
+        res.status(500).json({ message: 'Failed to update user.' });
+    }
+});
+
 app.post('/register', async (req, res) => {
     try {
         const hash = await bcrypt.hash(req.body.password, 10);
