@@ -37,6 +37,7 @@ The tests will be ran automatically when the container goes up. Access the websi
 - Handlebars - Templating for Displaying Data
 - Mocha - Testing Framework
 - Chai - Assertion for Testing
+- JSDoc - Autodocumenter 
 
 
 ### Software Prerequisites
