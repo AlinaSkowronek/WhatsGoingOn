@@ -122,12 +122,14 @@ app.get('/map', auth, async (req, res) => {
         res.render('pages/map', {
             apiKey: process.env.API_KEY,
             markersAndEvents: JSON.stringify(markersAndEvents),
-            message: 'Logged in as an event organizer'
+            message: 'Logged in as an event organizer',
+            organizer: organizer
         });
     }
     else {
         //console.log('user is not an organizer');
         res.render('pages/map', { apiKey: process.env.API_KEY, markersAndEvents: JSON.stringify(markersAndEvents) });
+        organizer: organizer
     }
 });
 
@@ -302,6 +304,9 @@ app.put('/denyEvent', auth, async (req, res) => {
 });
 
 app.post('/createEvent', auth, async (req, res) => {
+    if (!req.session.user.organizer) {
+        return res.status(403).json({ message: 'Unauthorized access.' });
+      }
     const {
         event_name, event_date, event_description, event_start, event_end, event_location, event_organizers, event_type, latitude, longitude
     } = req.body;
