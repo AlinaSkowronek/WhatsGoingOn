@@ -1,7 +1,6 @@
 ## WhatsGoingOn
 A website that will show you what's going on at CU Boulder! Event locations are displayed over a map of CU Boulder, with interactable markers being able to expand to view the event's date, time, description, and more.
 
-[Check it out online!](https://whatsgoingon.onrender.com/)
 
 ## Build Instructions
 Clone the repository, create a .env file in the root (WhatsGoingOn/) that includes a google maps API key, session secret and postgres login. The postgres logins can be anything desired, but the google maps API key must be from Google directly. Here is an example with dummy values:
@@ -37,7 +36,7 @@ The tests will be ran automatically when the container goes up. Access the websi
 - Handlebars - Templating for Displaying Data
 - Mocha - Testing Framework
 - Chai - Assertion for Testing
-- JSDoc - Autodocumenter 
+- JSDoc - Autodocumenter
 
 
 ### Software Prerequisites
